@@ -8,8 +8,11 @@ import type { Currency, Money } from '@/lib/types';
 import type { FxRate } from '@/lib/horizon/types';
 import { convert, pickRate } from '@/lib/horizon/fx';
 import {
+  addDays,
   daysInMonth,
+  daysBetween,
   generateDates,
+  monthsBetween,
   type ScheduleCalendar,
   type ScheduleRule,
 } from '@/lib/horizon/schedule';
@@ -198,46 +201,4 @@ export function categoryShares(
     sharePct: grandTotal === 0 ? 0 : (e.totalMinor / grandTotal) * 100,
     hasMissingRate: e.hasMissingRate,
   }));
-}
-
-// --- date helpers (UTC, YYYY-MM-DD strings — same discipline as schedule.ts) ---
-
-const MS_PER_DAY = 86_400_000;
-
-function parseDate(date: string): Date {
-  return new Date(`${date}T00:00:00Z`);
-}
-
-function formatDate(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
-
-function addDays(date: string, days: number): string {
-  return formatDate(new Date(parseDate(date).getTime() + days * MS_PER_DAY));
-}
-
-function daysBetween(from: string, to: string): number {
-  return Math.floor(
-    (parseDate(to).getTime() - parseDate(from).getTime()) / MS_PER_DAY
-  );
-}
-
-function monthsBetween(
-  from: string,
-  to: string
-): { year: number; month0: number }[] {
-  const months: { year: number; month0: number }[] = [];
-  let year = parseDate(from).getUTCFullYear();
-  let month0 = parseDate(from).getUTCMonth();
-  const endYear = parseDate(to).getUTCFullYear();
-  const endMonth0 = parseDate(to).getUTCMonth();
-  while (year < endYear || (year === endYear && month0 <= endMonth0)) {
-    months.push({ year, month0 });
-    month0++;
-    if (month0 > 11) {
-      month0 = 0;
-      year++;
-    }
-  }
-  return months;
 }

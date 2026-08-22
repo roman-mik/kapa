@@ -6,6 +6,7 @@
 import type { Money } from '@/lib/types';
 import type { IncomeSchedule, IncomeStream } from './types';
 import {
+  addDays,
   daysInMonth,
   generateDates,
   isWorkingDay,
@@ -30,6 +31,26 @@ export function hourlyIncomeForPeriod(
 }
 
 /**
+ * Working days between two dates (inclusive of both endpoints), returning 0
+ * for an inverted window (`from > to`), matching `generateDates`'s convention.
+ */
+export function workingDaysBetween(
+  from: string,
+  to: string,
+  calendar: ScheduleCalendar
+): number {
+  if (from > to) return 0;
+
+  let count = 0;
+  let cursor = from;
+  while (cursor <= to) {
+    if (isWorkingDay(cursor, calendar)) count++;
+    cursor = addDays(cursor, 1);
+  }
+  return count;
+}
+
+/**
  * Working days in a `YYYY-MM` month, derived from the calendar — never
  * hand-entered (B1's own acceptance criterion: fewer working days means
  * less derived income with no manual edit).
@@ -42,13 +63,9 @@ export function workingDaysInMonth(
   const year = Number(yearStr);
   const month0 = Number(monthStr) - 1;
   const total = daysInMonth(year, month0);
-
-  let count = 0;
-  for (let day = 1; day <= total; day++) {
-    const date = `${yearStr}-${monthStr}-${String(day).padStart(2, '0')}`;
-    if (isWorkingDay(date, calendar)) count++;
-  }
-  return count;
+  const first = `${month}-01`;
+  const last = `${month}-${String(total).padStart(2, '0')}`;
+  return workingDaysBetween(first, last, calendar);
 }
 
 /**

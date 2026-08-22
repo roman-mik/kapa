@@ -3,6 +3,7 @@ import {
   annualizedIncome,
   hourlyIncomeForPeriod,
   monthlyIncomeForStream,
+  workingDaysBetween,
   workingDaysInMonth,
 } from './income-math';
 import type { ScheduleCalendar } from '@/lib/horizon/schedule';
@@ -76,6 +77,34 @@ describe('hourlyIncomeForPeriod', () => {
   it('rounds half-up on a fractional result', () => {
     // 3333 * 7.5 * 1 = 24997.5 -> rounds to 24998.
     expect(hourlyIncomeForPeriod(3333, 7.5, 1)).toBe(24998);
+  });
+});
+
+describe('workingDaysBetween', () => {
+  it('a partial month: first half (1st–15th)', () => {
+    // January 2026: 1st–15th has 11 working days (Thu–Fri of week 1, Mon–Fri of week 2, Mon–Fri of week 3)
+    expect(workingDaysBetween('2026-01-01', '2026-01-15', monFri)).toBe(11);
+  });
+
+  it('sub-ranges within a month sum to workingDaysInMonth', () => {
+    const first = workingDaysBetween('2026-01-01', '2026-01-15', monFri);
+    const second = workingDaysBetween('2026-01-16', '2026-01-31', monFri);
+    const total = workingDaysInMonth('2026-01', monFri);
+    expect(first + second).toBe(total);
+  });
+
+  it('a window crossing a month boundary', () => {
+    // Jan 20 (Tue) to Feb 5 (Thu): Jan 20-23, 26-30 (9 days) + Feb 2-5 (4 days) = 13 working days
+    expect(workingDaysBetween('2026-01-20', '2026-02-05', monFri)).toBe(13);
+  });
+
+  it('a window with no working days (weekend only)', () => {
+    // Jan 3-4 is Saturday-Sunday
+    expect(workingDaysBetween('2026-01-03', '2026-01-04', monFri)).toBe(0);
+  });
+
+  it('an inverted window (from > to) returns 0', () => {
+    expect(workingDaysBetween('2026-01-31', '2026-01-01', monFri)).toBe(0);
   });
 });
 
