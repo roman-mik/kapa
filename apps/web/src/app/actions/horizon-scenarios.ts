@@ -8,15 +8,11 @@ import {
   scenarioCreateFromDraftSchema,
   scenarioCreateSchema,
   scenarioDiffUpsertSchema,
-  scenarioOneOffCreateSchema,
   scenarioUpdateSchema,
 } from '@/lib/horizon/scenarios/validation';
 import {
   createScenario,
-  createScenarioOneOff,
   deleteScenario,
-  deleteScenarioDiff,
-  deleteScenarioOneOff,
   duplicateScenario,
   updateScenario,
   upsertScenarioDiff,
@@ -170,73 +166,6 @@ export async function saveScenarioDiffAction(
     await upsertScenarioDiff(supabase, householdId, scenarioId, parsed.data);
   } catch (error) {
     reportError('saveScenarioDiffAction', error);
-    return { ok: false, error: t('saveFailed') };
-  }
-
-  revalidateScenarios();
-  return { ok: true };
-}
-
-export async function deleteScenarioDiffAction(
-  id: string
-): Promise<ActionResult> {
-  const t = await getTranslations('Errors');
-  const user = await verifySession();
-  if (!user) return { ok: false, error: t('notSignedIn') };
-
-  try {
-    const householdId = await getHouseholdId(user.id);
-    if (!householdId) throw new Error('No household for user');
-    const supabase = await createClient();
-    await deleteScenarioDiff(supabase, householdId, id);
-  } catch (error) {
-    reportError('deleteScenarioDiffAction', error);
-    return { ok: false, error: t('saveFailed') };
-  }
-
-  revalidateScenarios();
-  return { ok: true };
-}
-
-export async function saveScenarioOneOffAction(
-  scenarioId: string,
-  input: unknown
-): Promise<ActionResult> {
-  const t = await getTranslations('Errors');
-  const user = await verifySession();
-  if (!user) return { ok: false, error: t('notSignedIn') };
-
-  const parsed = scenarioOneOffCreateSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: t('saveFailed') };
-
-  try {
-    const householdId = await getHouseholdId(user.id);
-    if (!householdId) throw new Error('No household for user');
-    const supabase = await createClient();
-    await createScenarioOneOff(supabase, householdId, scenarioId, parsed.data);
-  } catch (error) {
-    reportError('saveScenarioOneOffAction', error);
-    return { ok: false, error: t('saveFailed') };
-  }
-
-  revalidateScenarios();
-  return { ok: true };
-}
-
-export async function deleteScenarioOneOffAction(
-  id: string
-): Promise<ActionResult> {
-  const t = await getTranslations('Errors');
-  const user = await verifySession();
-  if (!user) return { ok: false, error: t('notSignedIn') };
-
-  try {
-    const householdId = await getHouseholdId(user.id);
-    if (!householdId) throw new Error('No household for user');
-    const supabase = await createClient();
-    await deleteScenarioOneOff(supabase, householdId, id);
-  } catch (error) {
-    reportError('deleteScenarioOneOffAction', error);
     return { ok: false, error: t('saveFailed') };
   }
 

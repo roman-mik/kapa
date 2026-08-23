@@ -2,11 +2,6 @@
  * Horizon scenario Zod schemas, same idiom as `@/lib/horizon/spending/validation`.
  */
 import { z } from 'zod';
-import { CURRENCIES } from '@/lib/types';
-import {
-  ONE_OFF_CATEGORIES,
-  ONE_OFF_DIRECTIONS,
-} from '@/lib/horizon/spending/types';
 import { SCENARIO_DIFF_FIELDS } from './types';
 
 const SCENARIO_ENTITY_TYPES = Object.keys(SCENARIO_DIFF_FIELDS) as [
@@ -41,27 +36,11 @@ export const scenarioDiffUpsertSchema = z
     'Field is not editable for this entity type.'
   );
 
-export const scenarioOneOffCreateSchema = z.object({
-  accountId: z.string().min(1),
-  name: z.string().min(1).max(60),
-  category: z.enum(ONE_OFF_CATEGORIES),
-  amountMinor: z.number().int().positive(),
-  currency: z.enum(CURRENCIES),
-  date: z.string().min(1),
-  direction: z.enum(ONE_OFF_DIRECTIONS),
-});
-
 export const scenarioCreateFromDraftSchema = z.object({
   name: z.string().min(1).max(60),
   diffs: z.array(scenarioDiffUpsertSchema),
 });
 
 export type ScenarioCreateInput = z.infer<typeof scenarioCreateSchema>;
-export type ScenarioCreateFromDraftInput = z.infer<
-  typeof scenarioCreateFromDraftSchema
->;
 export type ScenarioUpdateInput = z.infer<typeof scenarioUpdateSchema>;
 export type ScenarioDiffUpsertInput = z.infer<typeof scenarioDiffUpsertSchema>;
-export type ScenarioOneOffCreateInput = z.infer<
-  typeof scenarioOneOffCreateSchema
->;

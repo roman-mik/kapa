@@ -4,15 +4,10 @@
  * `@/lib/horizon/mutations/spending`.
  */
 import type { SupabaseServerClient } from '@/lib/supabase/types';
-import type {
-  Scenario,
-  ScenarioDiff,
-  ScenarioOneOff,
-} from '../scenarios/types';
+import type { Scenario, ScenarioDiff } from '../scenarios/types';
 import {
   toScenario,
   toScenarioDiff,
-  toScenarioOneOff,
   type HorizonScenarioDiffRow,
   type HorizonScenarioOneOffRow,
   type HorizonScenarioRow,
@@ -20,7 +15,6 @@ import {
 import type {
   ScenarioCreateInput,
   ScenarioDiffUpsertInput,
-  ScenarioOneOffCreateInput,
   ScenarioUpdateInput,
 } from '../scenarios/validation';
 
@@ -210,62 +204,3 @@ export async function upsertScenarioDiff(
   return toScenarioDiff(data as HorizonScenarioDiffRow);
 }
 
-export async function deleteScenarioDiff(
-  supabase: SupabaseServerClient,
-  householdId: string,
-  id: string
-): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('horizon_scenario_diffs')
-    .delete()
-    .eq('id', id)
-    .eq('household_id', householdId)
-    .select('id')
-    .maybeSingle();
-
-  if (error) throw new Error(error.message);
-  return data !== null;
-}
-
-export async function createScenarioOneOff(
-  supabase: SupabaseServerClient,
-  householdId: string,
-  scenarioId: string,
-  input: ScenarioOneOffCreateInput
-): Promise<ScenarioOneOff> {
-  const { data, error } = await supabase
-    .from('horizon_scenario_one_offs')
-    .insert({
-      household_id: householdId,
-      scenario_id: scenarioId,
-      account_id: input.accountId,
-      name: input.name,
-      category: input.category,
-      amount_minor: input.amountMinor,
-      currency: input.currency,
-      date: input.date,
-      direction: input.direction,
-    })
-    .select(SCENARIO_ONE_OFF_COLUMNS)
-    .single();
-
-  if (error) throw new Error(error.message);
-  return toScenarioOneOff(data as HorizonScenarioOneOffRow);
-}
-
-export async function deleteScenarioOneOff(
-  supabase: SupabaseServerClient,
-  householdId: string,
-  id: string
-): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('horizon_scenario_one_offs')
-    .delete()
-    .eq('id', id)
-    .eq('household_id', householdId)
-    .select('id')
-    .maybeSingle();
-
-  if (error) throw new Error(error.message);
-  return data !== null;
-}

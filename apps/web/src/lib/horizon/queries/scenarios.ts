@@ -38,21 +38,6 @@ export async function getScenarios(
   return (data as HorizonScenarioRow[]).map(toScenario);
 }
 
-export async function getScenarioDiffs(
-  supabase: SupabaseServerClient,
-  householdId: string,
-  scenarioId: string
-): Promise<ScenarioDiff[]> {
-  const { data, error } = await supabase
-    .from('horizon_scenario_diffs')
-    .select(SCENARIO_DIFF_COLUMNS)
-    .eq('household_id', householdId)
-    .eq('scenario_id', scenarioId);
-
-  if (error) throw new Error(error.message);
-  return (data as HorizonScenarioDiffRow[]).map(toScenarioDiff);
-}
-
 /** All diffs across every scenario in the household, in one round trip —
  *  used by the comparison view (E3), which needs several scenarios at once. */
 export async function getAllScenarioDiffs(
@@ -66,22 +51,6 @@ export async function getAllScenarioDiffs(
 
   if (error) throw new Error(error.message);
   return (data as HorizonScenarioDiffRow[]).map(toScenarioDiff);
-}
-
-export async function getScenarioOneOffs(
-  supabase: SupabaseServerClient,
-  householdId: string,
-  scenarioId: string
-): Promise<ScenarioOneOff[]> {
-  const { data, error } = await supabase
-    .from('horizon_scenario_one_offs')
-    .select(SCENARIO_ONE_OFF_COLUMNS)
-    .eq('household_id', householdId)
-    .eq('scenario_id', scenarioId)
-    .order('date', { ascending: true });
-
-  if (error) throw new Error(error.message);
-  return (data as HorizonScenarioOneOffRow[]).map(toScenarioOneOff);
 }
 
 /** All scenario-scoped one-offs in the household, in one round trip — see
