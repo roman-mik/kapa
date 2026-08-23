@@ -640,7 +640,28 @@
         "entered": "Entered",
         "hourlyDerived": "Hourly derived",
         "accrualCharge": "Accrual charge"
-      }
+      },
+      "negativeDaysWarning": "Projected negative balance.",
+      "shortfall": "shortfall",
+      "triggerTotal": "Total",
+      "triggerAccount": "Account",
+      "triggerBoth": "Both",
+      "dismiss": "Dismiss",
+      "suggestions": "Suggestions",
+      "dismissing": "Dismissing…",
+      "dismissConfirm": "Dismiss",
+      "cancel": "Cancel",
+      "undo": "Undo",
+      "dismissed": "Dismissed",
+      "dismissReasonLabel": "Why are you dismissing this warning?",
+      "dismissReasonPlaceholder": "e.g., anticipated income, budget adjustment",
+      "negativeDayDismissed": "Warning dismissed.",
+      "negativeDayUndismissed": "Warning restored.",
+      "noSuggestionDate": "no clear landing date",
+      "noSourceInflow": "no preceding income",
+      "suggestShiftPayment": "Move {label} from {eventDate} to {date} ({amount})",
+      "suggestBringForward": "Move {label} forward to {toDate} ({amount})",
+      "suggestHoldBack": "Hold back {amount} from {from}"
     }
   }
 }

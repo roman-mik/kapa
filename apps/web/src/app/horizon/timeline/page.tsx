@@ -17,7 +17,13 @@ import {
 } from '@/lib/horizon/queries/spending';
 import { getHorizonFxRates } from '@/lib/horizon/queries/fx';
 import { getHorizonSettings } from '@/lib/horizon/queries/settings';
+import { getProjectionDismissals } from '@/lib/horizon/queries/projection';
 import { projectCashflow } from '@/lib/horizon/projection/projection';
+import {
+  negativeDays,
+  suggestFixes,
+  applyDismissals,
+} from '@/lib/horizon/projection/warnings';
 import { parseProjectionRange } from './parseProjectionRange';
 import { BalanceLineChart } from '@/components/horizon/timeline/BalanceLineChart';
 import { ProjectionTable } from '@/components/horizon/timeline/ProjectionTable';
@@ -25,6 +31,7 @@ import { MonthPairTable } from '@/components/horizon/timeline/MonthPairTable';
 import { RangeControl } from '@/components/horizon/timeline/RangeControl';
 import { ViewToggle } from '@/components/horizon/timeline/ViewToggle';
 import { StaleRateBanner } from '@/components/horizon/timeline/StaleRateBanner';
+import { NegativeDayBanner } from '@/components/horizon/timeline/NegativeDayBanner';
 
 export default async function HorizonTimelinePage({
   searchParams,
@@ -54,6 +61,7 @@ export default async function HorizonTimelinePage({
     calendar,
     holidays,
     settings,
+    dismissals,
   ] = await Promise.all([
     getHorizonAccounts(supabase, householdId),
     getIncomeStreams(supabase, householdId),
@@ -66,6 +74,7 @@ export default async function HorizonTimelinePage({
     getWorkCalendar(supabase, householdId),
     getHolidays(supabase, householdId),
     getHorizonSettings(supabase, householdId),
+    getProjectionDismissals(supabase, householdId),
   ]);
 
   const { from, to, view } = parseProjectionRange(searchParams, todayStr);
@@ -94,6 +103,19 @@ export default async function HorizonTimelinePage({
     }
   );
 
+  const negDays = negativeDays(projection);
+  const negDaysWithSuggestions = negDays.map((day) => ({
+    ...day,
+    suggestions: suggestFixes(projection, day.date, {
+      shiftWindowDays: 3,
+    }),
+  }));
+  const negDaysWithDismissals = applyDismissals(
+    negDaysWithSuggestions,
+    dismissals,
+    settings.reportingCurrency
+  );
+
   const t = await getTranslations('Horizon.timeline');
 
   return (
@@ -105,6 +127,11 @@ export default async function HorizonTimelinePage({
       <StaleRateBanner
         oldestRateAsOfDate={projection.oldestRateAsOfDate}
         today={todayStr}
+      />
+
+      <NegativeDayBanner
+        negativeDays={negDaysWithDismissals}
+        reportingCurrency={settings.reportingCurrency}
       />
 
       <div className="space-y-2">

@@ -640,7 +640,28 @@
         "entered": "Введено",
         "hourlyDerived": "Из почасовой",
         "accrualCharge": "Начисление"
-      }
+      },
+      "negativeDaysWarning": "Прогнозируемый отрицательный баланс.",
+      "shortfall": "дефицит",
+      "triggerTotal": "Итого",
+      "triggerAccount": "Счёт",
+      "triggerBoth": "Оба",
+      "dismiss": "Отклонить",
+      "suggestions": "Рекомендации",
+      "dismissing": "Отклонение…",
+      "dismissConfirm": "Отклонить",
+      "cancel": "Отмена",
+      "undo": "Отменить",
+      "dismissed": "Отклонено",
+      "dismissReasonLabel": "Почему вы отклоняете это предупреждение?",
+      "dismissReasonPlaceholder": "напр., ожидаемый доход, корректировка бюджета",
+      "negativeDayDismissed": "Предупреждение отклонено.",
+      "negativeDayUndismissed": "Предупреждение восстановлено.",
+      "noSuggestionDate": "нет подходящей даты",
+      "noSourceInflow": "нет предыдущего дохода",
+      "suggestShiftPayment": "Переместить {label} с {eventDate} на {date} ({amount})",
+      "suggestBringForward": "Переместить {label} вперёд на {toDate} ({amount})",
+      "suggestHoldBack": "Отложить {amount} из {from}"
     }
   }
 }
