@@ -5,7 +5,10 @@
  * module; "baseline" is simply the live data with zero diffs applied.
  */
 import type { Currency, Money } from '@/lib/types';
-import type { OneOffCategory, OneOffDirection } from '@/lib/horizon/spending/types';
+import type {
+  OneOffCategory,
+  OneOffDirection,
+} from '@/lib/horizon/spending/types';
 
 export interface Scenario {
   id: string;
@@ -17,8 +20,16 @@ export type ScenarioEntityType = 'incomeStream' | 'obligation' | 'dailyExpense';
 
 /** The fields E1/B5 can override, per entity type. `archived` on an income
  *  stream is B5's "toggle a stream on/off within a scenario". */
-export const SCENARIO_DIFF_FIELDS: Record<ScenarioEntityType, readonly string[]> = {
-  incomeStream: ['hourlyRateMinor', 'hoursPerDay', 'fixedAmountMinor', 'archived'],
+export const SCENARIO_DIFF_FIELDS: Record<
+  ScenarioEntityType,
+  readonly string[]
+> = {
+  incomeStream: [
+    'hourlyRateMinor',
+    'hoursPerDay',
+    'fixedAmountMinor',
+    'archived',
+  ],
   obligation: ['amountMinor', 'archived'],
   dailyExpense: ['dailyAmountMinor', 'capMinor', 'archived'],
 };

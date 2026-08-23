@@ -4,7 +4,11 @@
  * `@/lib/horizon/mutations/spending`.
  */
 import type { SupabaseServerClient } from '@/lib/supabase/types';
-import type { Scenario, ScenarioDiff, ScenarioOneOff } from '../scenarios/types';
+import type {
+  Scenario,
+  ScenarioDiff,
+  ScenarioOneOff,
+} from '../scenarios/types';
 import {
   toScenario,
   toScenarioDiff,
@@ -49,7 +53,11 @@ export async function createScenario(
 
   const { data, error } = await supabase
     .from('horizon_scenarios')
-    .insert({ household_id: householdId, name: input.name, sort_order: sortOrder })
+    .insert({
+      household_id: householdId,
+      name: input.name,
+      sort_order: sortOrder,
+    })
     .select(SCENARIO_COLUMNS)
     .single();
 
@@ -106,25 +114,28 @@ export async function duplicateScenario(
   id: string,
   newName: string
 ): Promise<Scenario> {
-  const [{ error: sErr }, { data: diffs, error: dErr }, { data: oneOffs, error: oErr }] =
-    await Promise.all([
-      supabase
-        .from('horizon_scenarios')
-        .select(SCENARIO_COLUMNS)
-        .eq('id', id)
-        .eq('household_id', householdId)
-        .single(),
-      supabase
-        .from('horizon_scenario_diffs')
-        .select(SCENARIO_DIFF_COLUMNS)
-        .eq('scenario_id', id)
-        .eq('household_id', householdId),
-      supabase
-        .from('horizon_scenario_one_offs')
-        .select(SCENARIO_ONE_OFF_COLUMNS)
-        .eq('scenario_id', id)
-        .eq('household_id', householdId),
-    ]);
+  const [
+    { error: sErr },
+    { data: diffs, error: dErr },
+    { data: oneOffs, error: oErr },
+  ] = await Promise.all([
+    supabase
+      .from('horizon_scenarios')
+      .select(SCENARIO_COLUMNS)
+      .eq('id', id)
+      .eq('household_id', householdId)
+      .single(),
+    supabase
+      .from('horizon_scenario_diffs')
+      .select(SCENARIO_DIFF_COLUMNS)
+      .eq('scenario_id', id)
+      .eq('household_id', householdId),
+    supabase
+      .from('horizon_scenario_one_offs')
+      .select(SCENARIO_ONE_OFF_COLUMNS)
+      .eq('scenario_id', id)
+      .eq('household_id', householdId),
+  ]);
 
   if (sErr) throw new Error(sErr.message);
   if (dErr) throw new Error(dErr.message);

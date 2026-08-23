@@ -3,7 +3,10 @@
  */
 import { z } from 'zod';
 import { CURRENCIES } from '@/lib/types';
-import { ONE_OFF_CATEGORIES, ONE_OFF_DIRECTIONS } from '@/lib/horizon/spending/types';
+import {
+  ONE_OFF_CATEGORIES,
+  ONE_OFF_DIRECTIONS,
+} from '@/lib/horizon/spending/types';
 import { SCENARIO_DIFF_FIELDS } from './types';
 
 const SCENARIO_ENTITY_TYPES = Object.keys(SCENARIO_DIFF_FIELDS) as [
@@ -31,7 +34,10 @@ export const scenarioDiffUpsertSchema = z
     value: z.union([z.number(), z.boolean()]),
   })
   .refine(
-    (v) => (SCENARIO_DIFF_FIELDS[v.entityType] as readonly string[]).includes(v.field),
+    (v) =>
+      (SCENARIO_DIFF_FIELDS[v.entityType] as readonly string[]).includes(
+        v.field
+      ),
     'Field is not editable for this entity type.'
   );
 
@@ -56,4 +62,6 @@ export type ScenarioCreateFromDraftInput = z.infer<
 >;
 export type ScenarioUpdateInput = z.infer<typeof scenarioUpdateSchema>;
 export type ScenarioDiffUpsertInput = z.infer<typeof scenarioDiffUpsertSchema>;
-export type ScenarioOneOffCreateInput = z.infer<typeof scenarioOneOffCreateSchema>;
+export type ScenarioOneOffCreateInput = z.infer<
+  typeof scenarioOneOffCreateSchema
+>;

@@ -58,7 +58,8 @@ function breakEvenRate(
 ): MetricWithInputs<number | null> {
   const rateByStreamId = new Map<string, number>();
   for (const stream of streams) {
-    if (stream.kind === 'hourly') rateByStreamId.set(stream.id, stream.hourlyRateMinor);
+    if (stream.kind === 'hourly')
+      rateByStreamId.set(stream.id, stream.hourlyRateMinor);
   }
 
   let currentHourlyIncomeMinor = 0;

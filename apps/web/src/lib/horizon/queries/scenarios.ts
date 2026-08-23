@@ -2,7 +2,11 @@
  * Horizon scenario queries. Same idiom as `@/lib/horizon/queries/spending`.
  */
 import type { SupabaseServerClient } from '@/lib/supabase/types';
-import type { Scenario, ScenarioDiff, ScenarioOneOff } from '../scenarios/types';
+import type {
+  Scenario,
+  ScenarioDiff,
+  ScenarioOneOff,
+} from '../scenarios/types';
 import {
   toScenario,
   toScenarioDiff,

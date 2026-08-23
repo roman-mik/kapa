@@ -4,7 +4,10 @@
  */
 import type { Currency, Money } from '@/lib/types';
 import type { Database } from '@/lib/supabase/database.types';
-import type { OneOffCategory, OneOffDirection } from '@/lib/horizon/spending/types';
+import type {
+  OneOffCategory,
+  OneOffDirection,
+} from '@/lib/horizon/spending/types';
 import type {
   Scenario,
   ScenarioDiff,
@@ -41,7 +44,9 @@ export function toScenarioDiff(row: HorizonScenarioDiffRow): ScenarioDiff {
   };
 }
 
-export function toScenarioOneOff(row: HorizonScenarioOneOffRow): ScenarioOneOff {
+export function toScenarioOneOff(
+  row: HorizonScenarioOneOffRow
+): ScenarioOneOff {
   return {
     id: row.id,
     scenarioId: row.scenario_id,

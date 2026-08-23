@@ -48,7 +48,9 @@ export function InlineNumberField({
           ? majorToMinor(draft, currency)
           : Number(draft.replace(',', '.'));
         if (next === null || !Number.isFinite(next)) {
-          setDraft(currency ? minorToMajor(valueMinor, currency) : String(valueMinor));
+          setDraft(
+            currency ? minorToMajor(valueMinor, currency) : String(valueMinor)
+          );
           return;
         }
         onChange(next);

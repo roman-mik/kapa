@@ -80,7 +80,9 @@ export function ComparisonTable({
               className={`px-3 py-2 ${
                 firstNegatives[i] === null && hasAnyClean ? HIGHLIGHT : ''
               } ${
-                firstNegatives[i] !== null && firstNegatives[i] === latestNegative && !hasAnyClean
+                firstNegatives[i] !== null &&
+                firstNegatives[i] === latestNegative &&
+                !hasAnyClean
                   ? HIGHLIGHT
                   : ''
               }`}

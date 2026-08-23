@@ -86,7 +86,11 @@ export function applyScenarioDiffs(
       const idx = streams.findIndex((s) => s.id === diff.entityId);
       if (idx === -1) continue;
       if (streams === baseline.streams) streams = [...streams];
-      streams[idx] = applyIncomeStreamDiff(streams[idx], diff.field, diff.value);
+      streams[idx] = applyIncomeStreamDiff(
+        streams[idx],
+        diff.field,
+        diff.value
+      );
     } else if (diff.entityType === 'obligation') {
       const idx = obligations.findIndex((o) => o.id === diff.entityId);
       if (idx === -1) continue;

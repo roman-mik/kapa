@@ -483,7 +483,13 @@ describe('projectionMetrics', () => {
         to: '2026-01-15',
         today: '2026-01-15',
         reportingCurrency: 'USD',
-        order: ['income', 'oneOffIn', 'obligation', 'dailyExpense', 'oneOffOut'],
+        order: [
+          'income',
+          'oneOffIn',
+          'obligation',
+          'dailyExpense',
+          'oneOffOut',
+        ],
       },
       [stream]
     );

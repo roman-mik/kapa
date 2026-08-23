@@ -29,7 +29,9 @@ function revalidateScenarios() {
   revalidatePath('/horizon/timeline');
 }
 
-export async function createScenarioAction(input: unknown): Promise<ActionResult> {
+export async function createScenarioAction(
+  input: unknown
+): Promise<ActionResult> {
   const t = await getTranslations('Errors');
   const user = await verifySession();
   if (!user) return { ok: false, error: t('notSignedIn') };
@@ -175,7 +177,9 @@ export async function saveScenarioDiffAction(
   return { ok: true };
 }
 
-export async function deleteScenarioDiffAction(id: string): Promise<ActionResult> {
+export async function deleteScenarioDiffAction(
+  id: string
+): Promise<ActionResult> {
   const t = await getTranslations('Errors');
   const user = await verifySession();
   if (!user) return { ok: false, error: t('notSignedIn') };
@@ -219,7 +223,9 @@ export async function saveScenarioOneOffAction(
   return { ok: true };
 }
 
-export async function deleteScenarioOneOffAction(id: string): Promise<ActionResult> {
+export async function deleteScenarioOneOffAction(
+  id: string
+): Promise<ActionResult> {
   const t = await getTranslations('Errors');
   const user = await verifySession();
   if (!user) return { ok: false, error: t('notSignedIn') };

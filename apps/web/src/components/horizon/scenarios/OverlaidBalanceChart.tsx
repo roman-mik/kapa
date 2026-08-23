@@ -26,7 +26,9 @@ export function OverlaidBalanceChart({
   const chartWidth = 1000 - padding.left - padding.right;
   const chartHeight = 300 - padding.top - padding.bottom;
 
-  const allBalances = results.flatMap((r) => r.dailyBalances.map((b) => b.totalMinor));
+  const allBalances = results.flatMap((r) =>
+    r.dailyBalances.map((b) => b.totalMinor)
+  );
   const minBalance = Math.min(...allBalances);
   const maxBalance = Math.max(...allBalances);
   const range = maxBalance - minBalance || 1;
@@ -110,7 +112,10 @@ export function OverlaidBalanceChart({
 
       {/* Legend */}
       {results.map((r, i) => (
-        <g key={r.scenarioId ?? 'baseline'} transform={`translate(${padding.left + i * 200}, 310)`}>
+        <g
+          key={r.scenarioId ?? 'baseline'}
+          transform={`translate(${padding.left + i * 200}, 310)`}
+        >
           <rect width="10" height="10" fill={PALETTE[i % PALETTE.length]} />
           <text x="14" y="9" fontSize="11" fill="currentColor">
             {r.scenarioId === null ? 'Baseline' : r.scenarioName}

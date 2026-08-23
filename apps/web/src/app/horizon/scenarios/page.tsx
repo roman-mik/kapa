@@ -24,9 +24,15 @@ import {
 } from '@/lib/horizon/queries/scenarios';
 import { addDays } from '@/lib/horizon/schedule';
 import { ScenariosApp } from '@/components/horizon/scenarios/ScenariosApp';
-import type { ScenarioDiff, ScenarioOneOff } from '@/lib/horizon/scenarios/types';
+import type {
+  ScenarioDiff,
+  ScenarioOneOff,
+} from '@/lib/horizon/scenarios/types';
 
-function groupBy<T, K extends string>(items: T[], key: (item: T) => K): Record<K, T[]> {
+function groupBy<T, K extends string>(
+  items: T[],
+  key: (item: T) => K
+): Record<K, T[]> {
   const result = {} as Record<K, T[]>;
   for (const item of items) {
     const k = key(item);

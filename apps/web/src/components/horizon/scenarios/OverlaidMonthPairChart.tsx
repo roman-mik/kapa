@@ -112,7 +112,10 @@ export function OverlaidMonthPairChart({
       />
 
       {results.map((r, i) => (
-        <g key={r.scenarioId ?? 'baseline'} transform={`translate(${padding.left + i * 200}, 310)`}>
+        <g
+          key={r.scenarioId ?? 'baseline'}
+          transform={`translate(${padding.left + i * 200}, 310)`}
+        >
           <rect width="10" height="10" fill={PALETTE[i % PALETTE.length]} />
           <text x="14" y="9" fontSize="11" fill="currentColor">
             {r.scenarioId === null ? 'Baseline' : r.scenarioName} (— end, ┄ min)

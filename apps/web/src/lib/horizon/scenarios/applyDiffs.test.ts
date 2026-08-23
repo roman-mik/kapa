@@ -148,9 +148,9 @@ describe('applyScenarioDiffs', () => {
       []
     );
 
-    expect(result.streams[0].kind === 'hourly' && result.streams[0].hourlyRateMinor).toBe(
-      5000
-    );
+    expect(
+      result.streams[0].kind === 'hourly' && result.streams[0].hourlyRateMinor
+    ).toBe(5000);
   });
 
   it('ignores a field diff that does not apply to the stream kind', () => {

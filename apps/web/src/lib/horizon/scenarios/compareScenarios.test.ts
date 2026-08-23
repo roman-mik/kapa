@@ -1,8 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import type { Money } from '@/lib/types';
-import type { ProjectionInputs, ProjectionOptions } from '@/lib/horizon/projection/types';
+import type {
+  ProjectionInputs,
+  ProjectionOptions,
+} from '@/lib/horizon/projection/types';
 import type { IncomeStream } from '@/lib/horizon/income/types';
-import type { Obligation, ObligationSchedule } from '@/lib/horizon/spending/types';
+import type {
+  Obligation,
+  ObligationSchedule,
+} from '@/lib/horizon/spending/types';
 import type { HorizonAccount } from '@/lib/horizon/types';
 import { compareScenarios } from './compareScenarios';
 import type { Scenario, ScenarioDiff } from './types';

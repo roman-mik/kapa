@@ -196,21 +196,28 @@ function WhatIfRows({
           {t('incomeStreams')}
         </h3>
         {liveStreams.map((stream) => (
-          <div key={stream.id} className="flex items-center justify-between gap-2">
+          <div
+            key={stream.id}
+            className="flex items-center justify-between gap-2"
+          >
             <span className="truncate text-sm">{stream.name}</span>
             {stream.kind === 'hourly' ? (
               <InlineNumberField
                 valueMinor={stream.hourlyRateMinor}
                 currency={stream.currency}
                 aria-label={stream.name}
-                onChange={(v) => onChange('incomeStream', stream.id, 'hourlyRateMinor', v)}
+                onChange={(v) =>
+                  onChange('incomeStream', stream.id, 'hourlyRateMinor', v)
+                }
               />
             ) : (
               <InlineNumberField
                 valueMinor={stream.fixedAmountMinor}
                 currency={stream.currency}
                 aria-label={stream.name}
-                onChange={(v) => onChange('incomeStream', stream.id, 'fixedAmountMinor', v)}
+                onChange={(v) =>
+                  onChange('incomeStream', stream.id, 'fixedAmountMinor', v)
+                }
               />
             )}
           </div>
@@ -222,13 +229,18 @@ function WhatIfRows({
           {t('obligations')}
         </h3>
         {liveObligations.map((obligation) => (
-          <div key={obligation.id} className="flex items-center justify-between gap-2">
+          <div
+            key={obligation.id}
+            className="flex items-center justify-between gap-2"
+          >
             <span className="truncate text-sm">{obligation.name}</span>
             <InlineNumberField
               valueMinor={obligation.amountMinor}
               currency={obligation.currency}
               aria-label={obligation.name}
-              onChange={(v) => onChange('obligation', obligation.id, 'amountMinor', v)}
+              onChange={(v) =>
+                onChange('obligation', obligation.id, 'amountMinor', v)
+              }
             />
           </div>
         ))}
@@ -239,7 +251,10 @@ function WhatIfRows({
           {t('dailyExpenses')}
         </h3>
         {liveDailyExpenses.map((expense) => (
-          <div key={expense.id} className="flex items-center justify-between gap-2">
+          <div
+            key={expense.id}
+            className="flex items-center justify-between gap-2"
+          >
             <span className="truncate text-sm">{expense.name}</span>
             <InlineNumberField
               valueMinor={expense.capMinor ?? expense.dailyAmountMinor}

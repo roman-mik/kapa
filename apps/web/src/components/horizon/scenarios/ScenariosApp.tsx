@@ -8,8 +8,15 @@
  */
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import type { ProjectionInputs, ProjectionOptions } from '@/lib/horizon/projection/types';
-import type { Scenario, ScenarioDiff, ScenarioOneOff } from '@/lib/horizon/scenarios/types';
+import type {
+  ProjectionInputs,
+  ProjectionOptions,
+} from '@/lib/horizon/projection/types';
+import type {
+  Scenario,
+  ScenarioDiff,
+  ScenarioOneOff,
+} from '@/lib/horizon/scenarios/types';
 import { compareScenarios } from '@/lib/horizon/scenarios/compareScenarios';
 import { ScenarioList } from './ScenarioList';
 import { ScenarioEditor } from './ScenarioEditor';
@@ -48,12 +55,20 @@ export function ScenariosApp({
 
   const results = useMemo(() => {
     const selection = compareIds.map((id) => ({
-      scenario: id === null ? null : (scenarios.find((s) => s.id === id) ?? null),
+      scenario:
+        id === null ? null : (scenarios.find((s) => s.id === id) ?? null),
       diffs: id === null ? [] : (diffsByScenario[id] ?? []),
       oneOffs: id === null ? [] : (oneOffsByScenario[id] ?? []),
     }));
     return compareScenarios(inputs, options, selection);
-  }, [compareIds, scenarios, diffsByScenario, oneOffsByScenario, inputs, options]);
+  }, [
+    compareIds,
+    scenarios,
+    diffsByScenario,
+    oneOffsByScenario,
+    inputs,
+    options,
+  ]);
 
   return (
     <div className="space-y-6">
