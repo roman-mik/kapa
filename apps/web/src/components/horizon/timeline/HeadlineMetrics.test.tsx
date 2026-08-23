@@ -48,13 +48,24 @@ describe('HeadlineMetrics', () => {
       formulaKey: 'projection.metrics.firstNegativeDate',
       caveatKey: null,
     },
+    breakEvenRateMinor: {
+      value: 4500,
+      inputs: {
+        currentHourlyIncomeMinor: 250000,
+        totalHours: '176.00',
+        monthlySurplusMinor: 50000,
+        monthsInRange: '0.99',
+      },
+      formulaKey: 'projection.metrics.breakEvenRate',
+      caveatKey: null,
+    },
   };
 
-  it('renders all four metrics', () => {
+  it('renders all five metrics', () => {
     const { container } = render(<HeadlineMetrics metrics={mockMetrics} />);
 
     const details = container.querySelectorAll('details');
-    expect(details).toHaveLength(4);
+    expect(details).toHaveLength(5);
   });
 
   it('shows metric values in the summary', () => {
@@ -147,8 +158,8 @@ describe('HeadlineMetrics', () => {
     const details = container.querySelectorAll('details');
     const summaries = container.querySelectorAll('summary');
 
-    expect(details).toHaveLength(4);
-    expect(summaries).toHaveLength(4);
+    expect(details).toHaveLength(5);
+    expect(summaries).toHaveLength(5);
 
     summaries.forEach((summary) => {
       expect(summary.getAttribute('role')).not.toBe('button');

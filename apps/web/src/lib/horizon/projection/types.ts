@@ -292,4 +292,9 @@ export interface ProjectionMetrics {
   annualEquivalentMinor: MetricWithInputs<number>;
   runwayMonths: MetricWithInputs<number | null>;
   firstNegativeDate: MetricWithInputs<string | null>;
+  /** The hourly rate (reporting currency, minor units) that would bring
+   *  monthlySurplus to zero over the horizon, holding hours and every other
+   *  event fixed. Null when no hourly-derived income falls in range — Epic
+   *  E's comparison table (E3) needs this per scenario. */
+  breakEvenRateMinor: MetricWithInputs<number | null>;
 }

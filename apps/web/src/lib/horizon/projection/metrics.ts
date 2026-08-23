@@ -28,10 +28,75 @@ import type {
   MetricWithInputs,
 } from './types';
 import { AVERAGE_DAYS_PER_MONTH } from './types';
+import type { IncomeStream } from '@/lib/horizon/income/types';
+
+/**
+ * §5-E3. Blended hourly rate (reporting currency) that would zero
+ * monthlySurplus over the horizon, holding hours and every other event
+ * fixed.
+ *
+ * `hours` are recovered per hourlyDerived event as
+ * `amountMinor (native) / hourlyRateMinor (native)` — currency-agnostic,
+ * since both sides are in the stream's own currency — then the blended rate
+ * is computed in the REPORTING currency using `convertedMinor`:
+ *
+ *   currentHourlyIncome = sum(convertedMinor) over hourlyDerived events
+ *   totalHours           = sum(amountMinor / stream.hourlyRateMinor)
+ *   blendedRate           = currentHourlyIncome / totalHours
+ *   neededHourlyIncome    = currentHourlyIncome - monthlySurplus*monthsInRange
+ *   breakEvenRate          = neededHourlyIncome / totalHours
+ *
+ * Null when there is no hourly-derived income in range (nothing to solve
+ * for) or when the household's hourly streams have been deleted since the
+ * event was generated.
+ */
+function breakEvenRate(
+  projection: Projection,
+  streams: readonly IncomeStream[],
+  monthlySurplus: number,
+  monthsInRange: number
+): MetricWithInputs<number | null> {
+  const rateByStreamId = new Map<string, number>();
+  for (const stream of streams) {
+    if (stream.kind === 'hourly') rateByStreamId.set(stream.id, stream.hourlyRateMinor);
+  }
+
+  let currentHourlyIncomeMinor = 0;
+  let totalHours = 0;
+
+  for (const event of projection.events) {
+    if (event.derivation !== 'hourlyDerived' || event.unconvertible) continue;
+    const rate = rateByStreamId.get(event.sourceId);
+    if (!rate) continue;
+    currentHourlyIncomeMinor += event.convertedMinor ?? 0;
+    totalHours += event.amountMinor / rate;
+  }
+
+  const value =
+    totalHours > 0
+      ? Math.round(
+          (currentHourlyIncomeMinor - monthlySurplus * monthsInRange) /
+            totalHours
+        )
+      : null;
+
+  return {
+    value,
+    inputs: {
+      currentHourlyIncomeMinor,
+      totalHours: totalHours.toFixed(2),
+      monthlySurplusMinor: Math.round(monthlySurplus),
+      monthsInRange: monthsInRange.toFixed(2),
+    },
+    formulaKey: 'projection.metrics.breakEvenRate',
+    caveatKey: totalHours === 0 ? 'noHourlyIncome' : null,
+  };
+}
 
 export function projectionMetrics(
   projection: Projection,
-  options: ProjectionOptions
+  options: ProjectionOptions,
+  streams: readonly IncomeStream[] = []
 ): ProjectionMetrics {
   const rangeDays = daysBetween(options.from, options.to) + 1;
   const monthsInRange = rangeDays / AVERAGE_DAYS_PER_MONTH;
@@ -136,5 +201,11 @@ export function projectionMetrics(
     annualEquivalentMinor,
     runwayMonths,
     firstNegativeDate,
+    breakEvenRateMinor: breakEvenRate(
+      projection,
+      streams,
+      monthlySurplus,
+      monthsInRange
+    ),
   };
 }

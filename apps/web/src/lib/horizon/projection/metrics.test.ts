@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { Projection } from './types';
 import type { Money } from '@/lib/types';
+import type { IncomeStream } from '@/lib/horizon/income/types';
 import { projectionMetrics } from './metrics';
 
 describe('projectionMetrics', () => {
@@ -347,5 +348,149 @@ describe('projectionMetrics', () => {
 
     expect(metrics.monthlySurplusMinor.caveatKey).toBeNull();
     expect(metrics.annualEquivalentMinor.caveatKey).toBeNull();
+  });
+
+  it('breakEvenRateMinor is null with no hourly-derived income in range', () => {
+    const projection: Projection = {
+      dailyBalances: [
+        {
+          date: '2026-01-15',
+          totalMinor: 100000,
+          accounts: [
+            {
+              accountId: 'acc1',
+              balanceMinor: 100000 as Money,
+              convertedMinor: 100000,
+              includeInTotal: true,
+              currency: 'USD',
+            },
+          ],
+        },
+      ],
+      events: [],
+      monthPoints: [],
+      openingTotalMinor: 100000,
+      hasMissingRate: false,
+      missingRates: [],
+      oldestRateAsOfDate: null,
+    };
+
+    const metrics = projectionMetrics(projection, {
+      from: '2026-01-15',
+      to: '2026-01-15',
+      today: '2026-01-15',
+      reportingCurrency: 'USD',
+      order: ['income', 'oneOffIn', 'obligation', 'dailyExpense', 'oneOffOut'],
+    });
+
+    expect(metrics.breakEvenRateMinor.value).toBeNull();
+    expect(metrics.breakEvenRateMinor.caveatKey).toBe('noHourlyIncome');
+  });
+
+  it('breakEvenRateMinor solves the rate that zeroes the surplus', () => {
+    const stream: IncomeStream = {
+      id: 'stream1',
+      accountId: 'acc1',
+      name: 'Freelance',
+      currency: 'USD',
+      recurrence: 'recurring',
+      confidence: 'confirmed',
+      taxable: true,
+      startDate: '2026-01-01',
+      endDate: null,
+      sortOrder: 0,
+      archived: false,
+      kind: 'hourly',
+      hourlyRateMinor: 5000 as Money,
+      hoursPerDay: 8,
+    };
+
+    // 10 hours worked at 5000/hr = 50000 income; a 20000 outflow leaves a
+    // 30000 surplus over a one-day range (monthsInRange < 1, so the "monthly"
+    // surplus is scaled up) — breakEvenRate should bring that surplus to
+    // zero, i.e. come out below the actual rate.
+    const projection: Projection = {
+      dailyBalances: [
+        {
+          date: '2026-01-15',
+          totalMinor: 30000,
+          accounts: [
+            {
+              accountId: 'acc1',
+              balanceMinor: 30000 as Money,
+              convertedMinor: 30000,
+              includeInTotal: true,
+              currency: 'USD',
+            },
+          ],
+        },
+      ],
+      events: [
+        {
+          date: '2026-01-15',
+          originalDate: '2026-01-15',
+          shifted: false,
+          kind: 'income',
+          label: 'Freelance',
+          sourceId: 'stream1',
+          scheduleId: 'sched1',
+          occurrenceIndex: 0,
+          amountMinor: 50000 as Money,
+          currency: 'USD',
+          accountId: 'acc1',
+          convertedMinor: 50000,
+          unconvertible: false,
+          recurrence: 'recurring',
+          confidence: 'confirmed',
+          derivation: 'hourlyDerived',
+          coveredPeriod: '2026-01',
+          balanceBeforeMinor: -20000,
+          balanceAfterMinor: 30000,
+        },
+        {
+          date: '2026-01-15',
+          originalDate: '2026-01-15',
+          shifted: false,
+          kind: 'obligation',
+          label: 'Rent',
+          sourceId: 'ob1',
+          scheduleId: 'sched2',
+          occurrenceIndex: 0,
+          amountMinor: -20000 as Money,
+          currency: 'USD',
+          accountId: 'acc1',
+          convertedMinor: -20000,
+          unconvertible: false,
+          recurrence: 'recurring',
+          confidence: 'confirmed',
+          derivation: 'entered',
+          coveredPeriod: null,
+          balanceBeforeMinor: 0,
+          balanceAfterMinor: -20000,
+        },
+      ],
+      monthPoints: [],
+      openingTotalMinor: 0,
+      hasMissingRate: false,
+      missingRates: [],
+      oldestRateAsOfDate: null,
+    };
+
+    const metrics = projectionMetrics(
+      projection,
+      {
+        from: '2026-01-15',
+        to: '2026-01-15',
+        today: '2026-01-15',
+        reportingCurrency: 'USD',
+        order: ['income', 'oneOffIn', 'obligation', 'dailyExpense', 'oneOffOut'],
+      },
+      [stream]
+    );
+
+    // 10 hours worked (50000 / 5000). Break-even income = 50000 - surplus*monthsInRange.
+    expect(metrics.breakEvenRateMinor.value).not.toBeNull();
+    expect(metrics.breakEvenRateMinor.value as number).toBeLessThan(5000);
+    expect(metrics.breakEvenRateMinor.caveatKey).toBeNull();
   });
 });

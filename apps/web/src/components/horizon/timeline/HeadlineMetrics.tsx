@@ -46,6 +46,15 @@ export function HeadlineMetrics({ metrics }: HeadlineMetricsProps) {
             v || t('metrics.firstNegativeDate.none')
           }
         />
+        <MetricCard
+          label={t('metrics.breakEvenRate.label')}
+          metric={metrics.breakEvenRateMinor}
+          formatValue={(v: number | null) =>
+            v === null
+              ? t('metrics.breakEvenRate.none')
+              : (v / 100).toLocaleString()
+          }
+        />
       </div>
     </div>
   );

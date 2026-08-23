@@ -756,6 +756,159 @@ export type Database = {
           },
         ];
       };
+      horizon_scenario_diffs: {
+        Row: {
+          created_at: string;
+          effective_date: string | null;
+          entity_id: string;
+          entity_type: string;
+          field: string;
+          household_id: string;
+          id: string;
+          scenario_id: string;
+          updated_at: string;
+          value_json: Json;
+        };
+        Insert: {
+          created_at?: string;
+          effective_date?: string | null;
+          entity_id: string;
+          entity_type: string;
+          field: string;
+          household_id: string;
+          id?: string;
+          scenario_id: string;
+          updated_at?: string;
+          value_json: Json;
+        };
+        Update: {
+          created_at?: string;
+          effective_date?: string | null;
+          entity_id?: string;
+          entity_type?: string;
+          field?: string;
+          household_id?: string;
+          id?: string;
+          scenario_id?: string;
+          updated_at?: string;
+          value_json?: Json;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_scenario_diffs_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_scenario_diffs_scenario_id_fkey';
+            columns: ['scenario_id'];
+            isOneToOne: false;
+            referencedRelation: 'horizon_scenarios';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      horizon_scenario_one_offs: {
+        Row: {
+          account_id: string;
+          amount_minor: number;
+          category: string;
+          created_at: string;
+          currency: string;
+          date: string;
+          direction: string;
+          household_id: string;
+          id: string;
+          name: string;
+          scenario_id: string;
+        };
+        Insert: {
+          account_id: string;
+          amount_minor: number;
+          category: string;
+          created_at?: string;
+          currency: string;
+          date: string;
+          direction: string;
+          household_id: string;
+          id?: string;
+          name: string;
+          scenario_id: string;
+        };
+        Update: {
+          account_id?: string;
+          amount_minor?: number;
+          category?: string;
+          created_at?: string;
+          currency?: string;
+          date?: string;
+          direction?: string;
+          household_id?: string;
+          id?: string;
+          name?: string;
+          scenario_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_scenario_one_offs_account_id_fkey';
+            columns: ['account_id'];
+            isOneToOne: false;
+            referencedRelation: 'horizon_accounts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_scenario_one_offs_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'horizon_scenario_one_offs_scenario_id_fkey';
+            columns: ['scenario_id'];
+            isOneToOne: false;
+            referencedRelation: 'horizon_scenarios';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      horizon_scenarios: {
+        Row: {
+          created_at: string;
+          household_id: string;
+          id: string;
+          name: string;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          household_id: string;
+          id?: string;
+          name: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          household_id?: string;
+          id?: string;
+          name?: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_scenarios_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       horizon_work_calendars: {
         Row: {
           created_at: string;
