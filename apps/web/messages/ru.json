@@ -289,11 +289,8 @@
       "backToPocket": "Назад в Pocket"
     },
     "placeholder": {
-      "today": "Ответ одним взглядом: что есть, что будет и когда станет туго.",
-      "timeline": "Что будет день за днём, с минимумом внутри месяца рядом с балансом на конец месяца.",
       "scenarios": "Сравнение до четырёх сценариев будущего одновременно.",
-      "targetRate": "Расчёт от желаемой жизни к ставке, которая её покрывает.",
-      "assumptions": "Все допущения модели, с уверенностью и датой последней проверки."
+      "targetRate": "Расчёт от желаемой жизни к ставке, которая её покрывает."
     },
     "today": {
       "heroLabel": "Всего по счетам",
@@ -607,6 +604,43 @@
       "deleteOneOffEventAria": "Удалить разовое событие",
       "deleteConfirm": "Удалить?",
       "deleting": "Удаление…"
+    },
+    "timeline": {
+      "title": "График",
+      "dateHeader": "Дата",
+      "labelHeader": "Название",
+      "amountHeader": "Сумма",
+      "kindHeader": "Тип",
+      "balanceHeader": "Баланс",
+      "recurrenceHeader": "Повторяемость",
+      "confidenceHeader": "Уверенность",
+      "derivationHeader": "Источник",
+      "dailyExpensesCount": "{count} ежедневных расходов",
+      "monthHeader": "Месяц",
+      "monthEndLabel": "Конец месяца",
+      "monthEndBalance": "Баланс",
+      "minimumLabel": "Минимум",
+      "minimumBalance": "Баланс",
+      "partialLabel": "(частичный)",
+      "rangeLabel": "Период",
+      "range3months": "3 месяца",
+      "range6months": "6 месяцев",
+      "range12months": "12 месяцев",
+      "viewLabel": "Вид",
+      "viewLine": "График",
+      "viewWaterfall": "Водопад",
+      "viewTable": "Таблица",
+      "monthSummary": "Итоги месяца",
+      "eventDetails": "Детали событий",
+      "openingBalanceLabel": "Начальный баланс",
+      "openingBalanceNote": "Сегодняшние балансы счётов — это конец дня; события на сегодняшнюю дату уже согласованы и снова не будут проецироваться.",
+      "staleRateWarning": "Курс обмена устарел на {days, plural, one {# день} few {# дня} many {# дней} other {# дней}} — балансы могут быть неточными.",
+      "staleRateNote": "Рассмотрите возможность обновления курсов обмена на экране Допущения.",
+      "derivation": {
+        "entered": "Введено",
+        "hourlyDerived": "Из почасовой",
+        "accrualCharge": "Начисление"
+      }
     }
   }
 }
