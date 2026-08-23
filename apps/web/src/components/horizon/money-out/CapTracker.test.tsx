@@ -3,6 +3,9 @@ import { screen } from '@testing-library/react';
 import { renderWithIntl as render } from '@/test/intl';
 import { CapTracker } from './CapTracker';
 import { dailyExpense } from '@/test/factories';
+import type { Money } from '@/lib/types';
+
+const money = (n: number): Money => n as Money;
 
 describe('CapTracker', () => {
   it('shows the empty state when there are no capped daily expenses', () => {
@@ -35,7 +38,7 @@ describe('CapTracker', () => {
           }),
         ]}
         month="2026-02"
-        actuals={{ 'daily-1': 20000 }}
+        actuals={{ 'daily-1': { totalMinor: money(20000), hasMissingRate: false } }}
       />
     );
 
@@ -60,10 +63,29 @@ describe('CapTracker', () => {
           }),
         ]}
         month="2026-02"
-        actuals={{ 'daily-1': 15000 }}
+        actuals={{ 'daily-1': { totalMinor: money(15000), hasMissingRate: false } }}
       />
     );
 
     expect(screen.getByText('Over cap')).toBeInTheDocument();
+  });
+
+  it('warns when an expense could not be converted for lack of an FX rate', () => {
+    render(
+      <CapTracker
+        dailyExpenses={[
+          dailyExpense({
+            id: 'daily-1',
+            name: 'Groceries',
+            dailyAmountMinor: 1000,
+            capMinor: 30000,
+          }),
+        ]}
+        month="2026-02"
+        actuals={{ 'daily-1': { totalMinor: money(20000), hasMissingRate: true } }}
+      />
+    );
+
+    expect(screen.getByText('missing rate')).toBeInTheDocument();
   });
 });

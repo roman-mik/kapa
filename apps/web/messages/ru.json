@@ -574,7 +574,8 @@
         "actualLabel": "Потрачено фактически",
         "capLabel": "Лимит",
         "variantsLabel": "28 / 30 / 31 дней",
-        "overCap": "Превышен лимит"
+        "overCap": "Превышен лимит",
+        "missingRate": "нет курса"
       },
       "oneOffSectionTitle": "Разовые события",
       "noOneOffEventsYet": "Пока нет разовых событий.",

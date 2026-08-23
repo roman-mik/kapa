@@ -288,9 +288,12 @@ describe('sumPocketExpenses', () => {
       alice.client,
       alice.householdId,
       category.id,
-      '2026-08'
+      '2026-08',
+      'RSD',
+      [],
+      '2026-08-31'
     );
-    expect(total).toBe(3000);
+    expect(total).toEqual({ totalMinor: 3000, hasMissingRate: false });
   });
 
   it('returns 0 for a null category without querying expenses', async () => {
@@ -298,8 +301,11 @@ describe('sumPocketExpenses', () => {
       alice.client,
       alice.householdId,
       null,
-      '2026-08'
+      '2026-08',
+      'RSD',
+      [],
+      '2026-08-31'
     );
-    expect(total).toBe(0);
+    expect(total).toEqual({ totalMinor: 0, hasMissingRate: false });
   });
 });

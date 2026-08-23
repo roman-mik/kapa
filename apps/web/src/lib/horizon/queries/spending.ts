@@ -3,9 +3,11 @@
  * `@/lib/horizon/queries/income`.
  */
 import type { SupabaseServerClient } from '@/lib/supabase/types';
-import type { Money } from '@/lib/types';
+import type { Currency, Money } from '@/lib/types';
 import { getHousehold } from '@/lib/queries/household';
 import { monthWindow } from '@/lib/pocket-math';
+import { convert, pickRate } from '../fx';
+import type { FxRate } from '../types';
 import type {
   DailyExpense,
   Obligation,
@@ -91,35 +93,63 @@ export async function getOneOffEvents(
   return (data as HorizonOneOffEventRow[]).map(toOneOffEvent);
 }
 
+export interface PocketExpenseTotal {
+  totalMinor: Money;
+  /** True when at least one expense couldn't be converted for lack of a rate. */
+  hasMissingRate: boolean;
+}
+
 /**
  * Sums Pocket's real `expenses` for the given category over the household's
  * `YYYY-MM` month (in the household's own timezone, same as `listExpenses`)
  * — the "actual" side of C4's cap tracker's planned-vs-actual comparison.
- * Returns 0 for a `null` category (no Pocket category linked) rather than
- * summing every expense in the household.
+ * Each expense is converted into `targetCurrency` via `fx.ts` before
+ * summing (mirrors `categoryShares`'s discipline); a row with no usable rate
+ * is excluded from the total and flagged via `hasMissingRate` rather than
+ * thrown. Returns 0 for a `null` category (no Pocket category linked)
+ * rather than summing every expense in the household.
  */
 export async function sumPocketExpenses(
   supabase: SupabaseServerClient,
   householdId: string,
   pocketCategoryId: string | null,
-  month: string
-): Promise<Money> {
-  if (!pocketCategoryId) return 0 as Money;
+  month: string,
+  targetCurrency: Currency,
+  rates: FxRate[],
+  onOrBefore: string
+): Promise<PocketExpenseTotal> {
+  if (!pocketCategoryId) return { totalMinor: 0 as Money, hasMissingRate: false };
 
   const { timezone } = await getHousehold(supabase, householdId);
   const { startUtc, endUtc } = monthWindow(month, timezone);
 
   const { data, error } = await supabase
     .from('expenses')
-    .select('amount_minor')
+    .select('amount_minor, currency')
     .eq('household_id', householdId)
     .eq('category_id', pocketCategoryId)
     .gte('spent_at', startUtc.toISOString())
     .lt('spent_at', endUtc.toISOString());
 
   if (error) throw new Error(error.message);
-  const total = (data ?? []).reduce((sum, row) => sum + row.amount_minor, 0);
-  return total as Money;
+
+  let total = 0;
+  let hasMissingRate = false;
+  for (const row of data ?? []) {
+    const currency = row.currency as Currency;
+    if (currency === targetCurrency) {
+      total += row.amount_minor;
+      continue;
+    }
+    const rate = pickRate(rates, { base: currency, quote: targetCurrency, onOrBefore });
+    if (!rate) {
+      hasMissingRate = true;
+      continue;
+    }
+    total += convert(row.amount_minor, currency, targetCurrency, rate);
+  }
+
+  return { totalMinor: total as Money, hasMissingRate };
 }
 
 export async function getSchedulesForObligation(
