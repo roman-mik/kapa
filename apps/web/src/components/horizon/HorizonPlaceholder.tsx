@@ -1,7 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 
-type ScreenKey =
-  'today' | 'timeline' | 'scenarios' | 'targetRate' | 'assumptions';
+type ScreenKey = 'scenarios' | 'targetRate';
 
 /** Shared shape for the remaining placeholder horizon screens. */
 export async function HorizonPlaceholder({ screen }: { screen: ScreenKey }) {
