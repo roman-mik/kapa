@@ -15,9 +15,7 @@ interface NegativeDayBannerProps {
   reportingCurrency: Currency;
 }
 
-export function NegativeDayBanner({
-  negativeDays,
-}: NegativeDayBannerProps) {
+export function NegativeDayBanner({ negativeDays }: NegativeDayBannerProps) {
   const t = useTranslations('Horizon.timeline');
   const te = useTranslations('Errors');
   const toast = useToast();
