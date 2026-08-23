@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/roman-mik/kapa/compare/web-v0.10.0...web-v0.11.0) (2026-08-23)
+
+
+### Features
+
+* add Horizon target-rate solving ([#93](https://github.com/roman-mik/kapa/issues/93)) ([57d65ba](https://github.com/roman-mik/kapa/commit/57d65bacd6037b97891ac804da98a6c50e4bb0f1))
+
 ## [0.10.0](https://github.com/roman-mik/kapa/compare/web-v0.9.1...web-v0.10.0) (2026-08-23)
 
 
