@@ -661,7 +661,42 @@
       "noSourceInflow": "нет предыдущего дохода",
       "suggestShiftPayment": "Переместить {label} с {eventDate} на {date} ({amount})",
       "suggestBringForward": "Переместить {label} вперёд на {toDate} ({amount})",
-      "suggestHoldBack": "Отложить {amount} из {from}"
+      "suggestHoldBack": "Отложить {amount} из {from}",
+      "metricsHeadline": "Ключевые показатели",
+      "metrics": {
+        "formula": "Формула",
+        "caveat": "Примечание",
+        "inputs": "Входные данные",
+        "monthlySurplus": {
+          "label": "Ежемесячный профицит"
+        },
+        "annualEquivalent": {
+          "label": "Годовой эквивалент"
+        },
+        "runway": {
+          "label": "Запас прочности",
+          "months": "месяцев",
+          "indefinite": "неограниченно"
+        },
+        "firstNegativeDate": {
+          "label": "Первая отрицательная дата",
+          "none": "нет"
+        }
+      },
+      "waterfallDescription": "Каждый столбец представляет изменение баланса от события или агрегированных событий одного дня одного типа. Текущий баланс показан между столбцами."
+    },
+    "formulas": {
+      "projection": {
+        "metrics": {
+          "monthlySurplus": "(Всего поступления - Всего расходы) / Месяцев в диапазоне",
+          "annualEquivalent": "Ежемесячный профицит от повторяющихся × 12 (исключаются разовые)",
+          "runwayMonths": "Начальный баланс / |Ежемесячный профицит| (все включено)",
+          "firstNegativeDate": "Первая дата, когда общий итог или какой-либо счёт становится отрицательным"
+        }
+      },
+      "caveats": {
+        "shortRange": "Диапазон менее 28 дней — экстраполяция может быть неточной"
+      }
     }
   }
 }

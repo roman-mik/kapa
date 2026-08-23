@@ -661,7 +661,42 @@
       "noSourceInflow": "no preceding income",
       "suggestShiftPayment": "Move {label} from {eventDate} to {date} ({amount})",
       "suggestBringForward": "Move {label} forward to {toDate} ({amount})",
-      "suggestHoldBack": "Hold back {amount} from {from}"
+      "suggestHoldBack": "Hold back {amount} from {from}",
+      "metricsHeadline": "Headline metrics",
+      "metrics": {
+        "formula": "Formula",
+        "caveat": "Caveat",
+        "inputs": "Inputs",
+        "monthlySurplus": {
+          "label": "Monthly surplus"
+        },
+        "annualEquivalent": {
+          "label": "Annual equivalent"
+        },
+        "runway": {
+          "label": "Runway",
+          "months": "months",
+          "indefinite": "indefinite"
+        },
+        "firstNegativeDate": {
+          "label": "First negative date",
+          "none": "none"
+        }
+      },
+      "waterfallDescription": "Each bar represents the balance change from an event or aggregated same-day same-kind events. Running balance shown between bars."
+    },
+    "formulas": {
+      "projection": {
+        "metrics": {
+          "monthlySurplus": "(Total inflows - Total outflows) / Months in range",
+          "annualEquivalent": "Recurring monthly surplus × 12 (excludes one-offs)",
+          "runwayMonths": "Opening total / |Monthly surplus| (all-inclusive)",
+          "firstNegativeDate": "First date when reporting total or any account closes negative"
+        }
+      },
+      "caveats": {
+        "shortRange": "Range is less than 28 days — extrapolation may be rough"
+      }
     }
   }
 }
