@@ -298,3 +298,22 @@ export function coveredPeriod(paymentDate: string, rule: ScheduleRule): string {
 
   return `${year}-${String(month0 + 1).padStart(2, '0')}`;
 }
+
+/**
+ * The first and last day of a `YYYY-MM` month in `YYYY-MM-DD` format.
+ * Consumed by hourly.ts (active-window overlap test) and projection.ts
+ * (monthPoints derivation).
+ */
+export function monthBounds(month: string): { first: string; last: string } {
+  const [year, month1] = month.split('-');
+  const yearNum = parseInt(year, 10);
+  const month0 = parseInt(month1, 10) - 1;
+
+  const firstDay = 1;
+  const lastDay = daysInMonth(yearNum, month0);
+
+  return {
+    first: `${year}-${month1}-${String(firstDay).padStart(2, '0')}`,
+    last: `${year}-${month1}-${String(lastDay).padStart(2, '0')}`,
+  };
+}
