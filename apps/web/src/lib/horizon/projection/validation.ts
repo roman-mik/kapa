@@ -9,7 +9,7 @@ export const dismissNegativeDaySchema = z.object({
   negativeDate: z.string().date(),
   shortfallMinor: z.number().int().positive(),
   currency: z.enum(CURRENCIES),
-  reason: z.string().min(1).max(500).trim(),
+  reason: z.string().trim().min(1).max(500),
 });
 
 // eventOrderUpdateSchema is defined here but not exported — it will be
