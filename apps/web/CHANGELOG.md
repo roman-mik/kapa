@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/roman-mik/kapa/compare/web-v0.9.1...web-v0.10.0) (2026-08-23)
+
+
+### Features
+
+* add horizon scenarios and interactive what-ifs ([#91](https://github.com/roman-mik/kapa/issues/91)) ([c5378d8](https://github.com/roman-mik/kapa/commit/c5378d8fc2771feabcec1fadcd2c21592b323b59))
+
 ## [0.9.1](https://github.com/roman-mik/kapa/compare/web-v0.9.0...web-v0.9.1) (2026-08-23)
 
 
