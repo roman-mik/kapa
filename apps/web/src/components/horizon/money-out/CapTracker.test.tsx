@@ -38,7 +38,9 @@ describe('CapTracker', () => {
           }),
         ]}
         month="2026-02"
-        actuals={{ 'daily-1': { totalMinor: money(20000), hasMissingRate: false } }}
+        actuals={{
+          'daily-1': { totalMinor: money(20000), hasMissingRate: false },
+        }}
       />
     );
 
@@ -63,7 +65,9 @@ describe('CapTracker', () => {
           }),
         ]}
         month="2026-02"
-        actuals={{ 'daily-1': { totalMinor: money(15000), hasMissingRate: false } }}
+        actuals={{
+          'daily-1': { totalMinor: money(15000), hasMissingRate: false },
+        }}
       />
     );
 
@@ -82,7 +86,9 @@ describe('CapTracker', () => {
           }),
         ]}
         month="2026-02"
-        actuals={{ 'daily-1': { totalMinor: money(20000), hasMissingRate: true } }}
+        actuals={{
+          'daily-1': { totalMinor: money(20000), hasMissingRate: true },
+        }}
       />
     );
 

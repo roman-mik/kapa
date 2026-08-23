@@ -118,7 +118,8 @@ export async function sumPocketExpenses(
   rates: FxRate[],
   onOrBefore: string
 ): Promise<PocketExpenseTotal> {
-  if (!pocketCategoryId) return { totalMinor: 0 as Money, hasMissingRate: false };
+  if (!pocketCategoryId)
+    return { totalMinor: 0 as Money, hasMissingRate: false };
 
   const { timezone } = await getHousehold(supabase, householdId);
   const { startUtc, endUtc } = monthWindow(month, timezone);
@@ -141,7 +142,11 @@ export async function sumPocketExpenses(
       total += row.amount_minor;
       continue;
     }
-    const rate = pickRate(rates, { base: currency, quote: targetCurrency, onOrBefore });
+    const rate = pickRate(rates, {
+      base: currency,
+      quote: targetCurrency,
+      onOrBefore,
+    });
     if (!rate) {
       hasMissingRate = true;
       continue;

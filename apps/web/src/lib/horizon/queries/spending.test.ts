@@ -161,7 +161,15 @@ describe('sumPocketExpenses', () => {
     seedHousehold(db);
     db.failNext('expenses', 'should not be called');
     expect(
-      await sumPocketExpenses(client, 'h1', null, '2026-08', 'RSD', [], '2026-08-31')
+      await sumPocketExpenses(
+        client,
+        'h1',
+        null,
+        '2026-08',
+        'RSD',
+        [],
+        '2026-08-31'
+      )
     ).toEqual({ totalMinor: 0, hasMissingRate: false });
   });
 
@@ -212,7 +220,15 @@ describe('sumPocketExpenses', () => {
     ]);
 
     expect(
-      await sumPocketExpenses(client, 'h1', 'cat-1', '2026-08', 'RSD', [], '2026-08-31')
+      await sumPocketExpenses(
+        client,
+        'h1',
+        'cat-1',
+        '2026-08',
+        'RSD',
+        [],
+        '2026-08-31'
+      )
     ).toEqual({ totalMinor: 3000, hasMissingRate: false });
   });
 
@@ -255,7 +271,15 @@ describe('sumPocketExpenses', () => {
     // e1: 1000 RSD as-is. e2: 2000 USD-minor ($20.00) x 117 -> 2340 RSD
     // (RSD has 0 decimal exponent, so its minor units are whole dinars).
     expect(
-      await sumPocketExpenses(client, 'h1', 'cat-1', '2026-08', 'RSD', rates, '2026-08-31')
+      await sumPocketExpenses(
+        client,
+        'h1',
+        'cat-1',
+        '2026-08',
+        'RSD',
+        rates,
+        '2026-08-31'
+      )
     ).toEqual({ totalMinor: 1000 + 2340, hasMissingRate: false });
   });
 
@@ -286,7 +310,15 @@ describe('sumPocketExpenses', () => {
     ]);
 
     expect(
-      await sumPocketExpenses(client, 'h1', 'cat-1', '2026-08', 'RSD', [], '2026-08-31')
+      await sumPocketExpenses(
+        client,
+        'h1',
+        'cat-1',
+        '2026-08',
+        'RSD',
+        [],
+        '2026-08-31'
+      )
     ).toEqual({ totalMinor: 1000, hasMissingRate: true });
   });
 });
