@@ -44,7 +44,7 @@ function formatDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function addDays(date: string, days: number): string {
+export function addDays(date: string, days: number): string {
   return formatDate(new Date(parseDate(date).getTime() + days * MS_PER_DAY));
 }
 
@@ -88,7 +88,7 @@ export function applySlippage(
   return date;
 }
 
-function monthsBetween(
+export function monthsBetween(
   from: string,
   to: string
 ): { year: number; month0: number }[] {
@@ -106,6 +106,12 @@ function monthsBetween(
     }
   }
   return months;
+}
+
+export function daysBetween(from: string, to: string): number {
+  return Math.floor(
+    (parseDate(to).getTime() - parseDate(from).getTime()) / MS_PER_DAY
+  );
 }
 
 /** The nth (1-5) occurrence of `weekday` in a month, or null if it doesn't exist. */

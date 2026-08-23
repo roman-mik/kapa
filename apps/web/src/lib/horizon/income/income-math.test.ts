@@ -3,6 +3,7 @@ import {
   annualizedIncome,
   hourlyIncomeForPeriod,
   monthlyIncomeForStream,
+  workingDaysBetween,
   workingDaysInMonth,
 } from './income-math';
 import type { ScheduleCalendar } from '@/lib/horizon/schedule';
@@ -76,6 +77,34 @@ describe('hourlyIncomeForPeriod', () => {
   it('rounds half-up on a fractional result', () => {
     // 3333 * 7.5 * 1 = 24997.5 -> rounds to 24998.
     expect(hourlyIncomeForPeriod(3333, 7.5, 1)).toBe(24998);
+  });
+});
+
+describe('workingDaysBetween', () => {
+  it('a partial month: first half (1st–15th)', () => {
+    // January 2026: 1st–15th has 11 working days (Thu–Fri of week 1, Mon–Fri of week 2, Mon–Fri of week 3)
+    expect(workingDaysBetween('2026-01-01', '2026-01-15', monFri)).toBe(11);
+  });
+
+  it('sub-ranges within a month sum to workingDaysInMonth', () => {
+    const first = workingDaysBetween('2026-01-01', '2026-01-15', monFri);
+    const second = workingDaysBetween('2026-01-16', '2026-01-31', monFri);
+    const total = workingDaysInMonth('2026-01', monFri);
+    expect(first + second).toBe(total);
+  });
+
+  it('a window crossing a month boundary', () => {
+    // Jan 20 (Tue) to Feb 5 (Thu): Jan 20-23, 26-30 (9 days) + Feb 2-5 (4 days) = 13 working days
+    expect(workingDaysBetween('2026-01-20', '2026-02-05', monFri)).toBe(13);
+  });
+
+  it('a window with no working days (weekend only)', () => {
+    // Jan 3-4 is Saturday-Sunday
+    expect(workingDaysBetween('2026-01-03', '2026-01-04', monFri)).toBe(0);
+  });
+
+  it('an inverted window (from > to) returns 0', () => {
+    expect(workingDaysBetween('2026-01-31', '2026-01-01', monFri)).toBe(0);
   });
 });
 
@@ -177,5 +206,107 @@ describe('annualizedIncome', () => {
         includeOneOff: true,
       })
     ).toBe(0);
+  });
+});
+
+describe('Edge cases for workingDaysBetween and workingDaysInMonth', () => {
+  it('single-day window where the day is a working day counts as 1', () => {
+    // 2026-01-05 is a Monday (working day)
+    expect(workingDaysBetween('2026-01-05', '2026-01-05', monFri)).toBe(1);
+  });
+
+  it('single-day window where the day is not a working day counts as 0', () => {
+    // 2026-01-03 is a Saturday
+    expect(workingDaysBetween('2026-01-03', '2026-01-03', monFri)).toBe(0);
+  });
+
+  it('a window spanning a year boundary counts working days correctly', () => {
+    // Dec 28, 2025 (Sun) to Jan 2, 2026 (Fri)
+    // Working days: Dec 29 (Mon), 30 (Tue), 31 (Wed), Jan 1 (Thu), 2 (Fri) = 5 days
+    expect(workingDaysBetween('2025-12-28', '2026-01-02', monFri)).toBe(5);
+  });
+
+  it('workingDaysInMonth with holidays in the middle reduces count correctly', () => {
+    const withHoliday: ScheduleCalendar = {
+      ...monFri,
+      holidays: ['2026-01-15'], // a Thursday
+    };
+    expect(workingDaysInMonth('2026-01', withHoliday)).toBe(21);
+  });
+
+  it('workingDaysInMonth with multiple holidays', () => {
+    const withHolidays: ScheduleCalendar = {
+      ...monFri,
+      holidays: ['2026-01-01', '2026-01-05', '2026-01-15'], // Thu, Mon, Thu
+    };
+    expect(workingDaysInMonth('2026-01', withHolidays)).toBe(19);
+  });
+
+  it('February in a leap year has correct day count', () => {
+    // 2028-02 is a leap year February with 29 days
+    // First day is a Thursday, so: 2 weekends = 8 weekend days, 29-8 = 21 working days
+    expect(workingDaysInMonth('2028-02', monFri)).toBe(21);
+  });
+
+  it('February in a non-leap year', () => {
+    // 2026-02 has 28 days, starts on a Sunday
+    // 4 full weekends + 1 Saturday = 9 weekend days, 28-9 = 19 working days
+    expect(workingDaysInMonth('2026-02', monFri)).toBe(20); // 1 Sun at start, 4 weekends, 1 Sat at end but one overlaps
+  });
+
+  it('a month starting on a weekend', () => {
+    // 2026-02-01 is a Sunday; just verify the calculation works
+    expect(workingDaysInMonth('2026-02', monFri)).toBe(20);
+  });
+
+  it('a month ending on a weekday', () => {
+    // 2026-03-31 is a Tuesday; verify it counts correctly
+    // March 2026: 31 days, starting Thursday = 22 working days
+    expect(workingDaysInMonth('2026-03', monFri)).toBe(22);
+  });
+
+  it('partition additivity: three sub-ranges sum to the whole month', () => {
+    const first = workingDaysBetween('2026-01-01', '2026-01-10', monFri);
+    const second = workingDaysBetween('2026-01-11', '2026-01-20', monFri);
+    const third = workingDaysBetween('2026-01-21', '2026-01-31', monFri);
+    const total = workingDaysInMonth('2026-01', monFri);
+    expect(first + second + third).toBe(total);
+  });
+
+  it('with an empty workingWeekdays array, no days are counted', () => {
+    const noWorkingDays: ScheduleCalendar = {
+      workingWeekdays: [],
+      holidays: [],
+    };
+    expect(workingDaysInMonth('2026-01', noWorkingDays)).toBe(0);
+    expect(workingDaysBetween('2026-01-01', '2026-01-31', noWorkingDays)).toBe(
+      0
+    );
+  });
+
+  it('with weekends as working days, counts all days except holidays', () => {
+    const always7days: ScheduleCalendar = {
+      workingWeekdays: [0, 1, 2, 3, 4, 5, 6], // every day
+      holidays: [],
+    };
+    expect(workingDaysInMonth('2026-01', always7days)).toBe(31);
+  });
+
+  it('with a holiday at the month boundary, it is counted', () => {
+    const withFirstDayHoliday: ScheduleCalendar = {
+      ...monFri,
+      holidays: ['2026-01-01'], // Thursday
+    };
+    // Normal Jan 2026 has 22 working days; removing the 1st = 21
+    expect(workingDaysInMonth('2026-01', withFirstDayHoliday)).toBe(21);
+  });
+
+  it('with a holiday at the last working day of the month, it is counted', () => {
+    const withFridayHoliday: ScheduleCalendar = {
+      ...monFri,
+      holidays: ['2026-01-30'], // Friday
+    };
+    // Normal Jan 2026 has 22 working days; removing Friday the 30th = 21
+    expect(workingDaysInMonth('2026-01', withFridayHoliday)).toBe(21);
   });
 });

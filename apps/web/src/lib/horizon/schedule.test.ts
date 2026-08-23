@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
+  addDays,
   applySlippage,
   coveredPeriod,
+  daysBetween,
   generateDates,
   isWorkingDay,
+  monthsBetween,
   nextDatesForSchedules,
   nextSixDates,
   type ScheduleCalendar,
@@ -300,5 +303,164 @@ describe('coveredPeriod', () => {
 
     expect(coveredPeriod(occ.originalDate ?? occ.date, sc)).toBe('2026-06');
     expect(coveredPeriod(occ.date, sc)).toBe('2026-07');
+  });
+});
+
+describe('Date helpers: addDays, daysBetween, monthsBetween', () => {
+  describe('addDays', () => {
+    it('adds positive days correctly', () => {
+      expect(addDays('2026-01-15', 5)).toBe('2026-01-20');
+    });
+
+    it('adds days across month boundaries', () => {
+      expect(addDays('2026-01-28', 5)).toBe('2026-02-02');
+    });
+
+    it('adds days across year boundaries', () => {
+      expect(addDays('2025-12-28', 5)).toBe('2026-01-02');
+    });
+
+    it('adds zero days returns the same date', () => {
+      expect(addDays('2026-01-15', 0)).toBe('2026-01-15');
+    });
+
+    it('adds negative days (subtraction)', () => {
+      expect(addDays('2026-01-15', -5)).toBe('2026-01-10');
+    });
+
+    it('subtracts days across month boundaries', () => {
+      expect(addDays('2026-02-05', -5)).toBe('2026-01-31');
+    });
+
+    it('subtracts days across year boundaries', () => {
+      expect(addDays('2026-01-02', -5)).toBe('2025-12-28');
+    });
+
+    it('handles leap year day correctly', () => {
+      // 2028 is a leap year; Feb 29 exists
+      expect(addDays('2028-02-28', 1)).toBe('2028-02-29');
+      expect(addDays('2028-02-29', 1)).toBe('2028-03-01');
+    });
+
+    it('handles non-leap year February', () => {
+      // 2026 is not a leap year; Feb 28 is the last day
+      expect(addDays('2026-02-28', 1)).toBe('2026-03-01');
+    });
+
+    it('handles 31st of a month followed by a 30-day month', () => {
+      expect(addDays('2026-01-31', 1)).toBe('2026-02-01');
+    });
+
+    it('handles end of month to start of next month', () => {
+      expect(addDays('2026-03-31', 1)).toBe('2026-04-01');
+    });
+
+    it('preserves zero-padding in date format', () => {
+      const result = addDays('2026-01-01', 1);
+      expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(result).toBe('2026-01-02');
+    });
+  });
+
+  describe('daysBetween', () => {
+    it('counts days between two dates', () => {
+      expect(daysBetween('2026-01-01', '2026-01-10')).toBe(9);
+    });
+
+    it('returns 0 for the same date', () => {
+      expect(daysBetween('2026-01-15', '2026-01-15')).toBe(0);
+    });
+
+    it('counts days across month boundaries', () => {
+      expect(daysBetween('2026-01-28', '2026-02-05')).toBe(8);
+    });
+
+    it('counts days across year boundaries', () => {
+      expect(daysBetween('2025-12-28', '2026-01-02')).toBe(5);
+    });
+
+    it('returns negative when from > to', () => {
+      expect(daysBetween('2026-01-10', '2026-01-01')).toBe(-9);
+    });
+
+    it('handles leap year correctly', () => {
+      // 2028 is a leap year
+      expect(daysBetween('2028-02-28', '2028-03-01')).toBe(2);
+    });
+
+    it('calculates a full month span', () => {
+      expect(daysBetween('2026-01-01', '2026-01-31')).toBe(30);
+    });
+
+    it('calculates a full leap February', () => {
+      expect(daysBetween('2028-02-01', '2028-02-29')).toBe(28);
+    });
+
+    it('calculates a full non-leap February', () => {
+      expect(daysBetween('2026-02-01', '2026-02-28')).toBe(27);
+    });
+  });
+
+  describe('monthsBetween', () => {
+    it('returns months between two dates in the same year', () => {
+      const result = monthsBetween('2026-01-15', '2026-03-15');
+      expect(result).toEqual([
+        { year: 2026, month0: 0 },
+        { year: 2026, month0: 1 },
+        { year: 2026, month0: 2 },
+      ]);
+    });
+
+    it('returns months across year boundaries', () => {
+      const result = monthsBetween('2025-11-15', '2026-02-15');
+      expect(result).toEqual([
+        { year: 2025, month0: 10 },
+        { year: 2025, month0: 11 },
+        { year: 2026, month0: 0 },
+        { year: 2026, month0: 1 },
+      ]);
+    });
+
+    it('returns a single month when from and to are in the same month', () => {
+      const result = monthsBetween('2026-01-01', '2026-01-31');
+      expect(result).toEqual([{ year: 2026, month0: 0 }]);
+    });
+
+    it('includes the from month and the to month', () => {
+      const result = monthsBetween('2026-01-15', '2026-01-15');
+      expect(result).toEqual([{ year: 2026, month0: 0 }]);
+    });
+
+    it('handles leap year transitions', () => {
+      const result = monthsBetween('2028-02-01', '2028-03-01');
+      expect(result).toEqual([
+        { year: 2028, month0: 1 },
+        { year: 2028, month0: 2 },
+      ]);
+    });
+
+    it('returns months in correct order', () => {
+      const result = monthsBetween('2026-06-01', '2026-12-01');
+      expect(result.length).toBe(7);
+      expect(result[0].month0).toBe(5);
+      expect(result[6].month0).toBe(11);
+    });
+  });
+
+  describe('Date helpers consistency', () => {
+    it('addDays + daysBetween are inverses', () => {
+      const start = '2026-01-15';
+      const days = 25;
+      const end = addDays(start, days);
+      const calculated = daysBetween(start, end);
+      expect(calculated).toBe(days);
+    });
+
+    it('monthsBetween respects month ordering from addDays', () => {
+      const start = '2026-01-01';
+      const end = addDays(start, 90); // ~3 months forward
+      const months = monthsBetween(start, end);
+      expect(months.length).toBeGreaterThanOrEqual(3);
+    });
   });
 });
