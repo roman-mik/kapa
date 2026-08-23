@@ -8,6 +8,7 @@ import { getHolidays, getWorkCalendar } from '@/lib/horizon/queries/income';
 import { ReportingCurrencyPicker } from '@/components/horizon/assumptions/ReportingCurrencyPicker';
 import { FxSnapshotTable } from '@/components/horizon/assumptions/FxSnapshotTable';
 import { WorkCalendarEditor } from '@/components/horizon/assumptions/WorkCalendarEditor';
+import { EventOrderPicker } from '@/components/horizon/assumptions/EventOrderPicker';
 
 export default async function HorizonAssumptionsPage() {
   const user = await verifySession();
@@ -30,6 +31,7 @@ export default async function HorizonAssumptionsPage() {
     <div className="flex max-w-2xl flex-col gap-6">
       <h1 className="font-heading text-2xl">{t('title')}</h1>
       <ReportingCurrencyPicker initialCurrency={settings.reportingCurrency} />
+      <EventOrderPicker initialOrder={settings.eventOrder} />
       <WorkCalendarEditor
         initialCalendar={calendar}
         initialHolidays={holidays}
