@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/roman-mik/kapa/compare/web-v0.9.0...web-v0.9.1) (2026-08-23)
+
+
+### Bug Fixes
+
+* convert Pocket expenses to daily-expense currency in cap tracker ([#89](https://github.com/roman-mik/kapa/issues/89)) ([51d6b0e](https://github.com/roman-mik/kapa/commit/51d6b0e8051ddb1fab3c8b6ef2f55a101fd69a22))
+
 ## [0.9.0](https://github.com/roman-mik/kapa/compare/web-v0.8.0...web-v0.9.0) (2026-08-23)
 
 
