@@ -7,7 +7,6 @@ import { createClient } from '@/lib/supabase/server';
 import {
   reconcileBalancesSchema,
   reconcileAccountBalanceSchema,
-  type ReconcileBalancesInput,
 } from '@/lib/horizon/validation';
 import { reconcileHorizonBalances } from '@/lib/horizon/mutations/balances';
 import { reportError } from '@/lib/observability';

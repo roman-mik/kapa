@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { fakeSupabase } from '@/test/fake-supabase';
+import type { FxRate } from '../types';
 import {
   getDailyExpenses,
   getObligations,
@@ -159,7 +160,17 @@ describe('sumPocketExpenses', () => {
     const { client, db } = fakeSupabase();
     seedHousehold(db);
     db.failNext('expenses', 'should not be called');
-    expect(await sumPocketExpenses(client, 'h1', null, '2026-08')).toBe(0);
+    expect(
+      await sumPocketExpenses(
+        client,
+        'h1',
+        null,
+        '2026-08',
+        'RSD',
+        [],
+        '2026-08-31'
+      )
+    ).toEqual({ totalMinor: 0, hasMissingRate: false });
   });
 
   it('sums matching expenses within the household month window', async () => {
@@ -208,8 +219,106 @@ describe('sumPocketExpenses', () => {
       },
     ]);
 
-    expect(await sumPocketExpenses(client, 'h1', 'cat-1', '2026-08')).toBe(
-      3000
-    );
+    expect(
+      await sumPocketExpenses(
+        client,
+        'h1',
+        'cat-1',
+        '2026-08',
+        'RSD',
+        [],
+        '2026-08-31'
+      )
+    ).toEqual({ totalMinor: 3000, hasMissingRate: false });
+  });
+
+  it('converts mismatched-currency expenses into the target currency', async () => {
+    const { client, db } = fakeSupabase();
+    seedHousehold(db);
+    db.seed('expenses', [
+      {
+        id: 'e1',
+        household_id: 'h1',
+        category_id: 'cat-1',
+        amount_minor: 1000,
+        currency: 'RSD',
+        note: null,
+        spent_at: '2026-08-05T00:00:00.000Z',
+        user_id: 'u1',
+      },
+      {
+        id: 'e2',
+        household_id: 'h1',
+        category_id: 'cat-1',
+        amount_minor: 2000,
+        currency: 'USD',
+        note: null,
+        spent_at: '2026-08-15T00:00:00.000Z',
+        user_id: 'u1',
+      },
+    ]);
+
+    const rates: FxRate[] = [
+      {
+        baseCode: 'USD',
+        quoteCode: 'RSD',
+        rateE8: 11_700_000_000, // 1 USD = 117 RSD
+        asOfDate: '2026-08-01',
+        source: 'test',
+      },
+    ];
+
+    // e1: 1000 RSD as-is. e2: 2000 USD-minor ($20.00) x 117 -> 2340 RSD
+    // (RSD has 0 decimal exponent, so its minor units are whole dinars).
+    expect(
+      await sumPocketExpenses(
+        client,
+        'h1',
+        'cat-1',
+        '2026-08',
+        'RSD',
+        rates,
+        '2026-08-31'
+      )
+    ).toEqual({ totalMinor: 1000 + 2340, hasMissingRate: false });
+  });
+
+  it('excludes rows with no usable rate and flags hasMissingRate', async () => {
+    const { client, db } = fakeSupabase();
+    seedHousehold(db);
+    db.seed('expenses', [
+      {
+        id: 'e1',
+        household_id: 'h1',
+        category_id: 'cat-1',
+        amount_minor: 1000,
+        currency: 'RSD',
+        note: null,
+        spent_at: '2026-08-05T00:00:00.000Z',
+        user_id: 'u1',
+      },
+      {
+        id: 'e2',
+        household_id: 'h1',
+        category_id: 'cat-1',
+        amount_minor: 2000,
+        currency: 'USD',
+        note: null,
+        spent_at: '2026-08-15T00:00:00.000Z',
+        user_id: 'u1',
+      },
+    ]);
+
+    expect(
+      await sumPocketExpenses(
+        client,
+        'h1',
+        'cat-1',
+        '2026-08',
+        'RSD',
+        [],
+        '2026-08-31'
+      )
+    ).toEqual({ totalMinor: 1000, hasMissingRate: true });
   });
 });

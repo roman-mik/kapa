@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { formatMoney } from '@/lib/format';
 import type { DailyExpense } from '@/lib/horizon/spending/types';
+import type { PocketExpenseTotal } from '@/lib/horizon/queries/spending';
 import {
   dailyExpenseForMonth,
   monthLengthVariants,
@@ -12,7 +13,8 @@ import {
  * C4's cap tracker: for every daily expense with a `capMinor` set, the
  * planned total for the given month next to Pocket's actual spend so far,
  * plus the 28/30/31-day reference variants. `actuals` is keyed by daily
- * expense id and comes from `sumPocketExpenses`, called server-side.
+ * expense id and comes from `sumPocketExpenses`, called server-side —
+ * already converted into the daily expense's own currency.
  */
 export function CapTracker({
   dailyExpenses,
@@ -21,7 +23,7 @@ export function CapTracker({
 }: {
   dailyExpenses: DailyExpense[];
   month: string;
-  actuals: Record<string, number>;
+  actuals: Record<string, PocketExpenseTotal>;
 }) {
   const t = useTranslations('Horizon.moneyOut');
 
@@ -41,7 +43,8 @@ export function CapTracker({
             const cap = d.capMinor as number;
             const planned = dailyExpenseForMonth(d.dailyAmountMinor, month);
             const variants = monthLengthVariants(d.dailyAmountMinor);
-            const actual = actuals[d.id] ?? 0;
+            const actual = actuals[d.id]?.totalMinor ?? 0;
+            const hasMissingRate = actuals[d.id]?.hasMissingRate ?? false;
             const overCap = actual > cap;
 
             return (
@@ -64,6 +67,11 @@ export function CapTracker({
                     {t('capTracker.capLabel')}:{' '}
                     {formatMoney(cap, d.currency, { withCurrency: true })}
                   </span>
+                  {hasMissingRate ? (
+                    <span className="text-accent-700">
+                      {t('capTracker.missingRate')}
+                    </span>
+                  ) : null}
                 </span>
                 <span className="text-xs text-ink-muted">
                   {t('capTracker.variantsLabel')}:{' '}

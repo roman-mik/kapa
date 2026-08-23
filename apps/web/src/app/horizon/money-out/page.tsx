@@ -57,7 +57,8 @@ export default async function HorizonMoneyOutPage() {
     getCategories(supabase, householdId),
   ]);
 
-  const month = new Date().toISOString().slice(0, 7);
+  const today = new Date().toISOString().slice(0, 10);
+  const month = today.slice(0, 7);
   const capped = dailyExpenses.filter((d) => !d.archived && d.capMinor != null);
   const actualEntries = await Promise.all(
     capped.map(
@@ -68,7 +69,10 @@ export default async function HorizonMoneyOutPage() {
             supabase,
             householdId,
             d.pocketCategoryId,
-            month
+            month,
+            d.currency,
+            rates,
+            today
           ),
         ] as const
     )
