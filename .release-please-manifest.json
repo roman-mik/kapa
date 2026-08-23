@@ -1,4 +1,4 @@
 {
-  "apps/web": "0.9.1",
+  "apps/web": "0.10.0",
   "packages/ui": "1.0.0"
 }
