@@ -37,7 +37,9 @@ function obligation(overrides: Partial<Obligation> = {}): Obligation {
   };
 }
 
-function schedule(overrides: Partial<ObligationSchedule> = {}): ObligationSchedule {
+function schedule(
+  overrides: Partial<ObligationSchedule> = {}
+): ObligationSchedule {
   return {
     id: 'os1',
     obligationId: 'o1',

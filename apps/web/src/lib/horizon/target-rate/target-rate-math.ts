@@ -18,7 +18,11 @@ import {
   generateDates,
   type ScheduleCalendar,
 } from '@/lib/horizon/schedule';
-import type { Obligation, ObligationSchedule, DailyExpense } from '../spending/types';
+import type {
+  Obligation,
+  ObligationSchedule,
+  DailyExpense,
+} from '../spending/types';
 import type { IncomeStream } from '../income/types';
 import { availableWorkingHours } from '../spending/hours';
 
@@ -78,7 +82,11 @@ export function monthlyCommitmentTotal(
       totalMinor += amountMinor;
       return;
     }
-    const rate = pickRate(rates, { base: currency, quote: reportingCurrency, onOrBefore });
+    const rate = pickRate(rates, {
+      base: currency,
+      quote: reportingCurrency,
+      onOrBefore,
+    });
     if (!rate) {
       hasMissingRate = true;
       return;
@@ -98,7 +106,10 @@ export function monthlyCommitmentTotal(
 
     const occurrences = obligationSchedules
       .filter((s) => s.obligationId === obligation.id)
-      .reduce((sum, s) => sum + generateDates(s, calendar, { from, to }).length, 0);
+      .reduce(
+        (sum, s) => sum + generateDates(s, calendar, { from, to }).length,
+        0
+      );
     addAmount(obligation.amountMinor * occurrences, obligation.currency);
   }
 
