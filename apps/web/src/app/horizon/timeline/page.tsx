@@ -19,22 +19,19 @@ import { getHorizonFxRates } from '@/lib/horizon/queries/fx';
 import { getHorizonSettings } from '@/lib/horizon/queries/settings';
 import { getProjectionDismissals } from '@/lib/horizon/queries/projection';
 import { projectCashflow } from '@/lib/horizon/projection/projection';
-import { projectionMetrics } from '@/lib/horizon/projection/metrics';
 import {
   negativeDays,
   suggestFixes,
   applyDismissals,
 } from '@/lib/horizon/projection/warnings';
 import { parseProjectionRange } from './parseProjectionRange';
-import { BalanceLineChart } from '@/components/horizon/timeline/BalanceLineChart';
 import { ProjectionTable } from '@/components/horizon/timeline/ProjectionTable';
 import { MonthPairTable } from '@/components/horizon/timeline/MonthPairTable';
 import { RangeControl } from '@/components/horizon/timeline/RangeControl';
 import { ViewToggle } from '@/components/horizon/timeline/ViewToggle';
 import { StaleRateBanner } from '@/components/horizon/timeline/StaleRateBanner';
 import { NegativeDayBanner } from '@/components/horizon/timeline/NegativeDayBanner';
-import { HeadlineMetrics } from '@/components/horizon/timeline/HeadlineMetrics';
-import { WaterfallChart } from '@/components/horizon/timeline/WaterfallChart';
+import { TimelineClient } from '@/components/horizon/timeline/TimelineClient';
 
 export default async function HorizonTimelinePage({
   searchParams,
@@ -119,14 +116,6 @@ export default async function HorizonTimelinePage({
     settings.reportingCurrency
   );
 
-  const metrics = projectionMetrics(projection, {
-    from,
-    to,
-    today: todayStr,
-    reportingCurrency: settings.reportingCurrency,
-    order: settings.eventOrder,
-  });
-
   const t = await getTranslations('Horizon.timeline');
 
   return (
@@ -155,37 +144,41 @@ export default async function HorizonTimelinePage({
         <ViewToggle current={view} from={from} to={to} />
       </div>
 
-      <div className="rounded bg-white p-4 shadow">
-        <HeadlineMetrics metrics={metrics} />
-      </div>
+      <TimelineClient
+        inputs={{
+          accounts,
+          streams,
+          incomeSchedules,
+          obligations,
+          obligationSchedules,
+          dailyExpenses,
+          oneOffs,
+          rates,
+          calendar: {
+            workingWeekdays: calendar.workingWeekdays,
+            holidays: holidays.map((holiday) => holiday.date),
+          },
+        }}
+        options={{
+          from,
+          to,
+          today: todayStr,
+          reportingCurrency: settings.reportingCurrency,
+          order: settings.eventOrder,
+        }}
+        view={view}
+      />
 
       {view === 'line' && (
-        <div className="space-y-2">
-          <div className="rounded bg-white p-4 shadow">
-            <BalanceLineChart
-              dailyBalances={projection.dailyBalances}
-              events={projection.events}
-              reportingCurrency={settings.reportingCurrency}
-            />
-          </div>
-          <div className="text-xs text-ink-muted">
-            <p>{t('openingBalanceLabel')}</p>
-            <p className="mt-1">{t('openingBalanceNote')}</p>
-          </div>
+        <div className="text-xs text-ink-muted">
+          <p>{t('openingBalanceLabel')}</p>
+          <p className="mt-1">{t('openingBalanceNote')}</p>
         </div>
       )}
 
       {view === 'waterfall' && (
-        <div className="space-y-2">
-          <div className="rounded bg-white p-4 shadow">
-            <WaterfallChart
-              events={projection.events}
-              reportingCurrency={settings.reportingCurrency}
-            />
-          </div>
-          <div className="text-xs text-ink-muted">
-            <p>{t('waterfallDescription')}</p>
-          </div>
+        <div className="text-xs text-ink-muted">
+          <p>{t('waterfallDescription')}</p>
         </div>
       )}
 

@@ -682,6 +682,10 @@
         "firstNegativeDate": {
           "label": "First negative date",
           "none": "none"
+        },
+        "breakEvenRate": {
+          "label": "Break-even rate",
+          "none": "n/a"
         }
       },
       "waterfallDescription": "Each bar represents the balance change from an event or aggregated same-day same-kind events. Running balance shown between bars."
@@ -692,12 +696,57 @@
           "monthlySurplus": "(Total inflows - Total outflows) / Months in range",
           "annualEquivalent": "Recurring monthly surplus × 12 (excludes one-offs)",
           "runwayMonths": "Opening total / |Monthly surplus| (all-inclusive)",
-          "firstNegativeDate": "First date when reporting total or any account closes negative"
+          "firstNegativeDate": "First date when reporting total or any account closes negative",
+          "breakEvenRate": "The hourly rate that would zero the monthly surplus, holding hours and other events fixed"
         }
       },
       "caveats": {
-        "shortRange": "Range is less than 28 days — extrapolation may be rough"
+        "shortRange": "Range is less than 28 days — extrapolation may be rough",
+        "noHourlyIncome": "No hourly income in range to solve for."
       }
+    },
+    "scenarios": {
+      "title": "Scenarios",
+      "baseline": "Baseline",
+      "baselineNote": "The unmodified plan — always available, never edited directly.",
+      "addScenario": "New scenario",
+      "namePlaceholder": "Scenario name",
+      "rename": "Rename",
+      "duplicate": "Duplicate",
+      "duplicateOf": "{name} (copy)",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this scenario?",
+      "deleting": "Deleting…",
+      "noScenariosYet": "No saved scenarios yet.",
+      "scenarioAdded": "Scenario created.",
+      "scenarioRenamed": "Scenario renamed.",
+      "scenarioDeleted": "Scenario deleted.",
+      "scenarioDuplicated": "Scenario duplicated.",
+      "editorTitle": "Edit scenario",
+      "incomeStreams": "Income streams",
+      "obligations": "Obligations",
+      "dailyExpenses": "Daily expenses",
+      "enabled": "Enabled",
+      "diffSaved": "Change saved.",
+      "resetField": "Reset to baseline",
+      "oneOffs": "Scenario one-off events",
+      "addOneOff": "Add one-off",
+      "oneOffAdded": "One-off added.",
+      "compareTitle": "Compare scenarios",
+      "compareSelect": "Select up to 4 to compare (baseline included)",
+      "compareEmpty": "Select at least one scenario to compare.",
+      "compareTooMany": "You can compare at most 4 scenarios at once.",
+      "columnMonthlyGap": "Monthly gap",
+      "columnFirstNegative": "First negative date",
+      "columnEndBalance": "End balance",
+      "columnBreakEvenRate": "Break-even rate",
+      "none": "none",
+      "whatIfTitle": "What if…",
+      "whatIfDescription": "Edit any rate, hours, obligation amount, or daily cap below to see the projection update live.",
+      "resetToBaseline": "Reset to baseline",
+      "saveAsScenario": "Save as scenario",
+      "savePromptTitle": "Save this what-if as a scenario",
+      "unsavedChanges": "{count} unsaved {count, plural, one {change} other {changes}}"
     }
   }
 }
