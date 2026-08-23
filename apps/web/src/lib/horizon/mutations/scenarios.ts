@@ -203,4 +203,3 @@ export async function upsertScenarioDiff(
   if (error) throw new Error(error.message);
   return toScenarioDiff(data as HorizonScenarioDiffRow);
 }
-
