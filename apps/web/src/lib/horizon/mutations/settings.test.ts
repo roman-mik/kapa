@@ -6,12 +6,27 @@ describe('updateHorizonReportingCurrency', () => {
   it('updates the reporting currency, leaving currency untouched (D15)', async () => {
     const { client, db } = fakeSupabase();
     db.seed('households', [
-      { id: 'h1', currency: 'RSD', horizon_reporting_currency: 'RSD' },
+      {
+        id: 'h1',
+        currency: 'RSD',
+        horizon_reporting_currency: 'RSD',
+        horizon_event_order:
+          'income,oneOffIn,obligation,dailyExpense,oneOffOut',
+      },
     ]);
     const result = await updateHorizonReportingCurrency(client, 'h1', {
       reportingCurrency: 'EUR',
     });
-    expect(result).toEqual({ reportingCurrency: 'EUR' });
+    expect(result).toEqual({
+      reportingCurrency: 'EUR',
+      eventOrder: [
+        'income',
+        'oneOffIn',
+        'obligation',
+        'dailyExpense',
+        'oneOffOut',
+      ],
+    });
     expect(db.rows('households')[0].currency).toBe('RSD');
   });
 

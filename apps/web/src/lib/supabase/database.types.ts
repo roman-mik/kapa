@@ -718,6 +718,44 @@ export type Database = {
           },
         ];
       };
+      horizon_projection_dismissals: {
+        Row: {
+          created_at: string;
+          currency: string;
+          household_id: string;
+          id: string;
+          negative_date: string;
+          reason: string;
+          shortfall_minor: number;
+        };
+        Insert: {
+          created_at?: string;
+          currency: string;
+          household_id: string;
+          id?: string;
+          negative_date: string;
+          reason: string;
+          shortfall_minor: number;
+        };
+        Update: {
+          created_at?: string;
+          currency?: string;
+          household_id?: string;
+          id?: string;
+          negative_date?: string;
+          reason?: string;
+          shortfall_minor?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'horizon_projection_dismissals_household_id_fkey';
+            columns: ['household_id'];
+            isOneToOne: false;
+            referencedRelation: 'households';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       horizon_work_calendars: {
         Row: {
           created_at: string;
@@ -815,6 +853,7 @@ export type Database = {
         Row: {
           created_at: string;
           currency: string;
+          horizon_event_order: string;
           horizon_reporting_currency: string;
           id: string;
           timezone: string;
@@ -822,6 +861,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           currency?: string;
+          horizon_event_order?: string;
           horizon_reporting_currency?: string;
           id?: string;
           timezone?: string;
@@ -829,6 +869,7 @@ export type Database = {
         Update: {
           created_at?: string;
           currency?: string;
+          horizon_event_order?: string;
           horizon_reporting_currency?: string;
           id?: string;
           timezone?: string;

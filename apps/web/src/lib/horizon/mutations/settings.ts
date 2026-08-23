@@ -18,7 +18,7 @@ export async function updateHorizonReportingCurrency(
     .from('households')
     .update({ horizon_reporting_currency: input.reportingCurrency })
     .eq('id', householdId)
-    .select('horizon_reporting_currency')
+    .select('horizon_reporting_currency, horizon_event_order')
     .maybeSingle();
 
   if (error) throw new Error(error.message);
