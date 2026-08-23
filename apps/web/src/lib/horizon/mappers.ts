@@ -10,6 +10,7 @@ import type {
   HorizonAccount,
   HorizonBalanceSnapshot,
   HorizonSettings,
+  ProjectionEventKind,
 } from './types';
 
 type Tables = Database['public']['Tables'];
@@ -35,10 +36,14 @@ export function toHorizonAccount(row: HorizonAccountRow): HorizonAccount {
 }
 
 export function toHorizonSettings(
-  row: Pick<HouseholdRow, 'horizon_reporting_currency'>
+  row: Pick<HouseholdRow, 'horizon_reporting_currency' | 'horizon_event_order'>
 ): HorizonSettings {
+  const eventOrder: ProjectionEventKind[] = row.horizon_event_order
+    ? (row.horizon_event_order.split(',') as ProjectionEventKind[])
+    : ['income', 'oneOffIn', 'obligation', 'dailyExpense', 'oneOffOut'];
   return {
     reportingCurrency: row.horizon_reporting_currency as Currency,
+    eventOrder,
   };
 }
 

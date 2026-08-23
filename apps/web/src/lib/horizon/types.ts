@@ -47,10 +47,14 @@ export interface HorizonAccount {
   archived: boolean;
 }
 
-/** Household-level horizon settings — currently just the reporting currency. */
+/** Household-level horizon settings — reporting currency and event ordering for projections. */
 export interface HorizonSettings {
   reportingCurrency: Currency;
+  eventOrder: ProjectionEventKind[];
 }
+
+export type ProjectionEventKind =
+  'income' | 'oneOffIn' | 'obligation' | 'dailyExpense' | 'oneOffOut';
 
 /**
  * A single dated FX snapshot: `1 baseCode = rateE8 / 1e8 quoteCode`. Global

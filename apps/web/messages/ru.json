@@ -63,7 +63,9 @@
     "oneOffEventNotFound": "Это разовое событие не найдено.",
     "checkWorkCalendar": "Проверьте рабочие дни.",
     "checkHoliday": "Проверьте дату и название праздника.",
-    "holidayNotFound": "Этот праздник не найден."
+    "holidayNotFound": "Этот праздник не найден.",
+    "checkDismissalFields": "Проверьте причину отклонения — она должна быть от 1 до 500 символов.",
+    "invalidInput": "Неправильный ввод."
   },
   "Home": {
     "pageTitle": "Pocket — расходы за этот месяц",

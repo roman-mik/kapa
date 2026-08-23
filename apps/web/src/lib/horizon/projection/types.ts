@@ -8,7 +8,11 @@
  */
 
 import type { Currency, Money } from '@/lib/types';
-import type { Confidence, Recurrence } from '@/lib/horizon/types';
+import type {
+  Confidence,
+  Recurrence,
+  ProjectionEventKind,
+} from '@/lib/horizon/types';
 import type { ScheduleCalendar } from '@/lib/horizon/schedule';
 import type { HorizonAccount } from '@/lib/horizon/types';
 import type { IncomeStream, IncomeSchedule } from '@/lib/horizon/income/types';
@@ -35,14 +39,13 @@ export const SLIPPAGE_PAD_DAYS = 31;
  *  documented failure mode. */
 export const HOURLY_GROUP_PAD_DAYS = 92;
 
-const EVENT_KINDS = [
+export const EVENT_KINDS = [
   'income',
   'oneOffIn',
   'obligation',
   'dailyExpense',
   'oneOffOut',
 ] as const;
-type ProjectionEventKind = (typeof EVENT_KINDS)[number];
 
 export interface ProjectionEvent {
   /** The date cash actually moves — post-slippage, and the date this event was

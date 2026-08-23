@@ -63,7 +63,9 @@
     "oneOffEventNotFound": "That one-off event couldn't be found.",
     "checkWorkCalendar": "Please check the working days.",
     "checkHoliday": "Please check the holiday's date and name.",
-    "holidayNotFound": "That holiday couldn't be found."
+    "holidayNotFound": "That holiday couldn't be found.",
+    "checkDismissalFields": "Please check the dismissal reason — it must be between 1 and 500 characters.",
+    "invalidInput": "Invalid input."
   },
   "Home": {
     "pageTitle": "Pocket — this month's spending",
