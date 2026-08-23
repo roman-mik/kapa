@@ -159,3 +159,134 @@ export interface Projection {
   missingRates: { from: Currency; to: Currency }[];
   oldestRateAsOfDate: string | null;
 }
+
+/** SLICE 3: metrics, warnings, dismissals
+ *
+ *  All types below are consumed by metrics.ts and warnings.ts, which are only
+ *  available in slice 3. They are declared here (not in those modules) to keep
+ *  the single type home principle and to avoid import cycles. */
+
+/** Average days per month: 365.25 / 12. Used in metric divisors.
+ *  Slice 3, consumed by metrics.ts. */
+export const AVERAGE_DAYS_PER_MONTH = 30.4375;
+
+/** Which pot a suggestion targets: the reporting-currency total, or a specific
+ *  account's balance in its own currency. For an account-triggered day, the
+ *  minima are computed over that account's own series, and candidate events
+ *  are restricted to that account's own events (critique M2). */
+export type SuggestionScope =
+  | { kind: 'total' }
+  | { kind: 'account'; accountId: string; currency: Currency };
+
+/** Every variant carries a deterministic id used for ranking tie-breaks and as
+ *  the React key: `${kind}:${negDate}:${sourceId ?? 'none'}:${refDate ?? 'none'}`.
+ *  All three suggestion algorithms operate on prefix/suffix minima of the daily
+ *  series and have exact, O(D) implementations (no re-sweep, no approximation). */
+export type Suggestion =
+  | {
+      kind: 'shiftPayment';
+      id: string;
+      scope: SuggestionScope;
+      sourceId: string;
+      eventLabel: string;
+      eventDate: string;
+      amountMinor: number;
+      /** The earliest date d > d0 with min(series[t] + |A|, t ∈ [d0, d−1]) ≥ 0.
+       *  null means no landing date inside the horizon clears the run (critique M4). */
+      suggestedDate: string | null;
+    }
+  | {
+      kind: 'bringForward';
+      id: string;
+      scope: SuggestionScope;
+      sourceId: string;
+      eventLabel: string;
+      eventDate: string;
+      amountMinor: number;
+      /** The FIRST day of the negative run this would clear (critique N-h). */
+      toDate: string;
+    }
+  | {
+      kind: 'holdBack';
+      id: string;
+      scope: SuggestionScope;
+      amountMinor: number;
+      /** The nearest convertible inflow at or before negDate, or null when
+       *  there is none. "Hold this back out of whatever arrives" is still
+       *  actionable advice and is what makes this a total function (critique M6). */
+      from: { label: string; date: string; sourceId: string } | null;
+    };
+
+/** Configuration for suggestion algorithms. Slice 3, consumed by warnings.ts. */
+export interface SuggestionOptions {
+  /** How far back shiftPayment looks for a movable outflow. Default 3: a
+   *  payment can usually be nudged a few days without renegotiating anything,
+   *  and §5-D3 asks for the NEAREST fix. Beyond ~3 days it stops being a nudge.
+   *  A field, not a literal buried in the function, so it tunes in one place. */
+  shiftWindowDays: number;
+}
+
+/** A single day where the household (or a specific account) closes negative.
+ *  The trigger field distinguishes which. Suggestions are computed once per
+ *  maximal negative run and shared by every day in it (critique N-h). */
+export interface NegativeDay {
+  date: string;
+  /** Positive magnitude of the worse of the two triggers. */
+  shortfallMinor: number;
+  /** Normally the reporting currency. When ONLY the account trigger fired and
+   *  that account's convertedMinor is null (no rate), this is the offending
+   *  account's own currency and shortfallMinor is its native shortfall
+   *  (critique N-h). */
+  shortfallCurrency: Currency;
+  /** Which condition fired (critique N1). */
+  trigger: 'total' | 'account' | 'both';
+  /** Live includeInTotal accounts closing negative in their own currency. An
+   *  account whose OPENING balance is already negative is excluded: a deliberate
+   *  overdraft would otherwise warn on every day of the horizon, dismissible one
+   *  date at a time (critique N-h). */
+  negativeAccountIds: string[];
+  /** 1-3 by construction — one per variant, never a runtime slice. Advisory
+   *  only: nothing here mutates anything. */
+  suggestions: Suggestion[];
+  dismissed: boolean;
+  dismissedReason: string | null;
+}
+
+/** Durable dismissal of a negative-day warning. Stored in
+ *  horizon_projection_dismissals (migration 0022, slice 4). A dismissal
+ *  suppresses only while the shortfall is no worse and the reporting currency
+ *  is unchanged — otherwise a worsening shortfall or currency change
+ *  re-surfaces it. */
+export interface ProjectionDismissal {
+  id: string;
+  negativeDate: string;
+  /** Positive magnitude at dismissal time. Stored so a worsening shortfall
+   *  re-surfaces instead of staying hidden. */
+  shortfallMinor: Money;
+  currency: Currency;
+  reason: string;
+  createdAt: string;
+}
+
+/** A metric with its derivation shown. Each metric carries inputs and a
+ *  formulaKey so the UI can expand to show the formula and its assumptions
+ *  as data, not hardcoded prose (§5-D5/G2). */
+export interface MetricWithInputs<T> {
+  value: T;
+  /** Raw numbers and field names used in the formula. */
+  inputs: Record<string, number | string | null>;
+  /** An i18n key naming the formula. */
+  formulaKey: string;
+  /** 'shortRange' when rangeDays < 28, else null — a 10-day extrapolation
+   *  is labelled rather than presented as fact. */
+  caveatKey: string | null;
+}
+
+/** The four headline metrics for the projection: monthly and annual surplus,
+ *  runway, and the first date a warning fires. Slice 3, consumed by metrics.ts. */
+export interface ProjectionMetrics {
+  monthlySurplusMinor: MetricWithInputs<number>;
+  annualEquivalentMinor: MetricWithInputs<number>;
+  runwayMonths: MetricWithInputs<number | null>;
+  firstNegativeDate: MetricWithInputs<string | null>;
+}
