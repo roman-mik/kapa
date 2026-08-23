@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.9.0](https://github.com/roman-mik/kapa/compare/web-v0.8.0...web-v0.9.0) (2026-08-23)
+
+
+### Features
+
+* add horizon event order picker ([#83](https://github.com/roman-mik/kapa/issues/83)) ([279d779](https://github.com/roman-mik/kapa/commit/279d7798bed9c9a17d9fbda63440843a76f1d7a7))
+* add horizon projection engine ([#80](https://github.com/roman-mik/kapa/issues/80)) ([d9c8b13](https://github.com/roman-mik/kapa/commit/d9c8b1367a486c048ac54e07155e840b71db418e))
+* add horizon projection metrics and warnings ([#81](https://github.com/roman-mik/kapa/issues/81)) ([13d34e2](https://github.com/roman-mik/kapa/commit/13d34e27c755d562ba84a3a6a42460dde6599fa9))
+* add horizon projection schema ([#82](https://github.com/roman-mik/kapa/issues/82)) ([1a7a0a5](https://github.com/roman-mik/kapa/commit/1a7a0a529d17e8020c42830ad936cebcd15ddf63))
+* add horizon timeline metrics and waterfall ([#86](https://github.com/roman-mik/kapa/issues/86)) ([ad761f8](https://github.com/roman-mik/kapa/commit/ad761f8496ac8796840d4402c41b34b3cdbee62b))
+* show horizon timeline ([#84](https://github.com/roman-mik/kapa/issues/84)) ([0620692](https://github.com/roman-mik/kapa/commit/0620692671543e613fef4e9b55cd54a041d20bed))
+* warn on projected negative days ([#85](https://github.com/roman-mik/kapa/issues/85)) ([e73d80a](https://github.com/roman-mik/kapa/commit/e73d80ad4cb14bdf431ff0c456c6913231508377))
+
 ## [0.8.0](https://github.com/roman-mik/kapa/compare/web-v0.7.0...web-v0.8.0) (2026-08-22)
 
 
