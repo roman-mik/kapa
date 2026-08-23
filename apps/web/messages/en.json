@@ -747,6 +747,30 @@
       "saveAsScenario": "Save as scenario",
       "savePromptTitle": "Save this what-if as a scenario",
       "unsavedChanges": "{count} unsaved {count, plural, one {change} other {changes}}"
+    },
+    "targetRate": {
+      "title": "Target rate",
+      "taxPolicyTitle": "Tax policy",
+      "taxPolicyDescription": "A fixed monthly amount plus a marginal rate applied to taxable income.",
+      "fixedMonthlyLabel": "Fixed monthly",
+      "marginalRateLabel": "Marginal rate (%)",
+      "save": "Save",
+      "settingsSaved": "Tax policy saved.",
+      "checkTaxFields": "Please check the fixed amount and marginal rate.",
+      "setTaxPolicyPrompt": "Set a fixed monthly amount and marginal rate to solve for a rate.",
+      "noHolidaysWarning": "No holidays are configured, so this solve assumes you work every weekday. Add holidays in Assumptions for a realistic rate.",
+      "requiredRateTitle": "Required hourly rate",
+      "noHoursAvailable": "No billable hours available",
+      "missingRateWarning": "One or more amounts couldn't be converted — an FX rate is missing.",
+      "costPerNetUnit": "Each extra 1.00 kept costs {rate} billed.",
+      "derivationTitle": "Show derivation",
+      "derivation": {
+        "commitmentTotal": "Monthly commitments",
+        "fixedMonthlyTax": "Fixed monthly tax",
+        "marginalRate": "Marginal rate",
+        "grossRequired": "Gross required",
+        "billableHours": "Billable hours"
+      }
     }
   }
 }

@@ -10,6 +10,7 @@ import type {
   HorizonAccount,
   HorizonBalanceSnapshot,
   HorizonSettings,
+  HorizonTaxSettings,
   ProjectionEventKind,
 } from './types';
 
@@ -44,6 +45,21 @@ export function toHorizonSettings(
   return {
     reportingCurrency: row.horizon_reporting_currency as Currency,
     eventOrder,
+  };
+}
+
+export function toHorizonTaxSettings(
+  row: Pick<
+    HouseholdRow,
+    'horizon_tax_fixed_monthly_minor' | 'horizon_tax_marginal_rate_bps'
+  >
+): HorizonTaxSettings {
+  return {
+    fixedMonthlyMinor:
+      row.horizon_tax_fixed_monthly_minor === null
+        ? null
+        : money(row.horizon_tax_fixed_monthly_minor),
+    marginalRateBps: row.horizon_tax_marginal_rate_bps,
   };
 }
 

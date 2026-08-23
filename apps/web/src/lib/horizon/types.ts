@@ -53,6 +53,17 @@ export interface HorizonSettings {
   eventOrder: ProjectionEventKind[];
 }
 
+/**
+ * Household-level tax policy for target-rate solving (Epic F, D10): a fixed
+ * monthly amount plus a marginal rate on taxable income. `null` until the
+ * household sets both — there is no default guess (D14).
+ */
+export interface HorizonTaxSettings {
+  fixedMonthlyMinor: Money | null;
+  /** Basis points, 0-9999 (never 10000 — that would divide by zero on gross-up). */
+  marginalRateBps: number | null;
+}
+
 export type ProjectionEventKind =
   'income' | 'oneOffIn' | 'obligation' | 'dailyExpense' | 'oneOffOut';
 

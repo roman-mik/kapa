@@ -1008,6 +1008,8 @@ export type Database = {
           currency: string;
           horizon_event_order: string;
           horizon_reporting_currency: string;
+          horizon_tax_fixed_monthly_minor: number | null;
+          horizon_tax_marginal_rate_bps: number | null;
           id: string;
           timezone: string;
         };
@@ -1016,6 +1018,8 @@ export type Database = {
           currency?: string;
           horizon_event_order?: string;
           horizon_reporting_currency?: string;
+          horizon_tax_fixed_monthly_minor?: number | null;
+          horizon_tax_marginal_rate_bps?: number | null;
           id?: string;
           timezone?: string;
         };
@@ -1024,6 +1028,8 @@ export type Database = {
           currency?: string;
           horizon_event_order?: string;
           horizon_reporting_currency?: string;
+          horizon_tax_fixed_monthly_minor?: number | null;
+          horizon_tax_marginal_rate_bps?: number | null;
           id?: string;
           timezone?: string;
         };

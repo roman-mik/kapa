@@ -5,9 +5,14 @@
  * into at read time.
  */
 import type { SupabaseServerClient } from '@/lib/supabase/types';
-import type { HorizonSettings, ProjectionEventKind } from '../types';
-import { toHorizonSettings } from '../mappers';
+import type {
+  HorizonSettings,
+  HorizonTaxSettings,
+  ProjectionEventKind,
+} from '../types';
+import { toHorizonSettings, toHorizonTaxSettings } from '../mappers';
 import type { HorizonSettingsUpdateInput } from '../validation';
+import type { HorizonTaxSettingsUpdateInput } from '../target-rate/validation';
 
 export async function updateHorizonReportingCurrency(
   supabase: SupabaseServerClient,
@@ -23,6 +28,26 @@ export async function updateHorizonReportingCurrency(
 
   if (error) throw new Error(error.message);
   return data ? toHorizonSettings(data) : null;
+}
+
+/** F1/F3's tax policy — see 0024_horizon_tax_settings.sql. */
+export async function updateHorizonTaxSettings(
+  supabase: SupabaseServerClient,
+  householdId: string,
+  input: HorizonTaxSettingsUpdateInput
+): Promise<HorizonTaxSettings | null> {
+  const { data, error } = await supabase
+    .from('households')
+    .update({
+      horizon_tax_fixed_monthly_minor: input.fixedMonthlyMinor,
+      horizon_tax_marginal_rate_bps: input.marginalRateBps,
+    })
+    .eq('id', householdId)
+    .select('horizon_tax_fixed_monthly_minor, horizon_tax_marginal_rate_bps')
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return data ? toHorizonTaxSettings(data) : null;
 }
 
 export async function setHorizonEventOrder(
