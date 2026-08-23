@@ -380,6 +380,20 @@
         "addHoliday": "Add holiday",
         "holidayAdded": "Holiday added.",
         "removeHolidayAria": "Remove holiday"
+      },
+      "eventOrder": {
+        "title": "Event order",
+        "description": "When two events land on the same day, this order breaks the tie for which one applies first.",
+        "settingsSaved": "Event order updated.",
+        "kind": {
+          "income": "Income",
+          "oneOffIn": "One-off in",
+          "obligation": "Obligation",
+          "dailyExpense": "Daily expense",
+          "oneOffOut": "One-off out"
+        },
+        "moveUpAria": "Move {kind} up",
+        "moveDownAria": "Move {kind} down"
       }
     },
     "moneyIn": {

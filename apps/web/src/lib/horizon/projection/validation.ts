@@ -12,11 +12,7 @@ export const dismissNegativeDaySchema = z.object({
   reason: z.string().trim().min(1).max(500),
 });
 
-// eventOrderUpdateSchema is defined here but not exported — it will be
-// exported in slice 5 when the event-order picker UI is implemented (the
-// only consumer). This follows the knip discipline from slice 4's spec.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const eventOrderUpdateSchema = z
+export const eventOrderUpdateSchema = z
   .object({
     eventOrder: z.array(z.enum(EVENT_KINDS)),
   })
