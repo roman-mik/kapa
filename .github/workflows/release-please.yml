@@ -46,10 +46,10 @@ jobs:
       # never behind it. Migrations here must stay additive/backward
       # compatible with the previous release for the brief window before the
       # Vercel deploy below completes.
-      - name: Apply pending Supabase migrations
-        env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-        run: supabase db push --db-url "$SUPABASE_DB_URL" --yes
+      # - name: Apply pending Supabase migrations
+      #   env:
+      #     SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      #   run: supabase db push --db-url "$SUPABASE_DB_URL" --yes
 
       # Deliberately not `vercel build` + `vercel deploy --prebuilt`: that
       # builds locally in Actions, and `vercel pull` can never retrieve
