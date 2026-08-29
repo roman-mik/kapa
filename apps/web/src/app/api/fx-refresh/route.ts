@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceRoleClient } from '@/lib/supabase/service-role';
-import type { SupabaseServerClient } from '@/lib/supabase/types';
 import { reportError } from '@/lib/observability';
 import { CURRENCIES } from '@/lib/types';
 
@@ -13,20 +12,6 @@ type FxRateInsert = {
   rate_e8: number;
   as_of_date: string;
   source: string;
-};
-
-/**
- * Row of `core.fx_rates` (kapa-core's migrations, same Supabase project).
- * The kapa-vue app reads its rates from that table, so every refresh must
- * land there too — same snapshot, same day, both tables. The table isn't in
- * this app's generated Database type (that only covers `public`), hence the
- * cast at the call site.
- */
-type CoreFxRateInsert = {
-  base_currency: string;
-  quote_currency: string;
-  rate_e8: number;
-  rate_date: string;
 };
 
 /**
@@ -59,6 +44,13 @@ async function fetchRatesFor(base: string): Promise<Record<string, unknown>> {
  * four currencies, nothing is written at all — yesterday's snapshot staying
  * in place is correct; a partial or zeroed rate would silently corrupt every
  * total on the Today screen.
+ *
+ * Writes `public.horizon_fx_rates` only — kapa-vue no longer reads its rates
+ * from here. `core.fx_rates` (kapa-core's migrations, same Supabase project)
+ * is now refreshed by kapa-core's own `fx-refresh` Edge Function on a
+ * pg_cron schedule, so a schema change there fails at kapa-core's build
+ * time instead of at runtime in this app's cron, and kapa-vue's fx
+ * correctness no longer depends on this app staying deployed.
  */
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
@@ -102,30 +94,6 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     reportError('fx-refresh.write', error);
-    return NextResponse.json({ ok: false }, { status: 500 });
-  }
-
-  const coreRows: CoreFxRateInsert[] = rows.map((r) => ({
-    base_currency: r.base_code,
-    quote_currency: r.quote_code,
-    rate_e8: r.rate_e8,
-    rate_date: r.as_of_date,
-  }));
-  // `core` isn't in this app's generated Database type — see CoreFxRateInsert.
-  type CoreSchemaClient = {
-    from: (table: 'fx_rates') => ReturnType<SupabaseServerClient['from']>;
-  };
-  const coreFx = (
-    supabase as unknown as { schema: (name: 'core') => CoreSchemaClient }
-  )
-    .schema('core')
-    .from('fx_rates');
-  const { error: coreError } = await coreFx.upsert(coreRows, {
-    onConflict: 'base_currency,quote_currency,rate_date',
-  });
-
-  if (coreError) {
-    reportError('fx-refresh.write-core', coreError);
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 
