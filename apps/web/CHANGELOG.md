@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/roman-mik/kapa/compare/web-v0.11.0...web-v0.12.0) (2026-08-29)
+
+
+### Features
+
+* mirror daily fx snapshot into core.fx_rates ([#96](https://github.com/roman-mik/kapa/issues/96)) ([8967f81](https://github.com/roman-mik/kapa/commit/8967f814b8e88d216b9ce37b421dcab9a020e1ae))
+
 ## [0.11.0](https://github.com/roman-mik/kapa/compare/web-v0.10.0...web-v0.11.0) (2026-08-23)
 
 
