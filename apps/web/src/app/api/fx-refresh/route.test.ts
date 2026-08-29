@@ -112,7 +112,10 @@ describe('GET /api/fx-refresh', () => {
   it('500s and reports when the horizon_fx_rates write fails', async () => {
     mockFetch.mockResolvedValue(providerResponse(FULL_RATES));
     const { client, db } = fakeSupabase();
-    db.failNext('horizon_fx_rates', 'permission denied for table horizon_fx_rates');
+    db.failNext(
+      'horizon_fx_rates',
+      'permission denied for table horizon_fx_rates'
+    );
     mockedCreateServiceRoleClient.mockReturnValue(client);
 
     const res = await GET(request('test-secret') as never);
