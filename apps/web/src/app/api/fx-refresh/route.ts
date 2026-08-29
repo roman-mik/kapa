@@ -117,7 +117,9 @@ export async function GET(request: NextRequest) {
   };
   const coreFx = (
     supabase as unknown as { schema: (name: 'core') => CoreSchemaClient }
-  ).schema('core').from('fx_rates');
+  )
+    .schema('core')
+    .from('fx_rates');
   const { error: coreError } = await coreFx.upsert(coreRows, {
     onConflict: 'base_currency,quote_currency,rate_date',
   });
