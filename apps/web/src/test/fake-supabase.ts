@@ -272,11 +272,6 @@ export function fakeSupabase(db: FakeDb = new FakeDb()): {
 } {
   const client = {
     from: (table: string) => db.query(table),
-    // Postgres-schema-scoped access (e.g. the fx cron's `core.fx_rates`);
-    // table keys are prefixed so tests can assert per-schema.
-    schema: (name: string) => ({
-      from: (table: string) => db.query(`${name}.${table}`),
-    }),
     rpc: (name: string, args?: Record<string, unknown>) => db.rpc(name, args),
   } as unknown as SupabaseServerClient;
   return { client, db };
