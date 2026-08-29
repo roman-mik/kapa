@@ -71,6 +71,16 @@ describe('GET /api/fx-refresh', () => {
     expect(
       rows.find((r) => r.base_code === 'EUR' && r.quote_code === 'RSD')?.rate_e8
     ).toBe(10_000_000_000);
+
+    // The same snapshot is mirrored into kapa-core's `core.fx_rates`
+    // (kapa-vue reads its rates from there).
+    const coreRows = db.rows('core.fx_rates');
+    expect(coreRows).toHaveLength(12);
+    const eurRsd = coreRows.find(
+      (r) => r.base_currency === 'EUR' && r.quote_currency === 'RSD'
+    );
+    expect(eurRsd?.rate_e8).toBe(10_000_000_000);
+    expect(eurRsd?.rate_date).toBe(rows[0].as_of_date);
   });
 
   it('writes nothing at all when the provider omits a currency', async () => {
@@ -84,6 +94,7 @@ describe('GET /api/fx-refresh', () => {
     const res = await GET(request('test-secret') as never);
     expect(res.status).toBe(500);
     expect(db.rows('horizon_fx_rates')).toHaveLength(0);
+    expect(db.rows('core.fx_rates')).toHaveLength(0);
   });
 
   it('writes nothing at all when the provider request fails', async () => {
@@ -107,5 +118,16 @@ describe('GET /api/fx-refresh', () => {
     // fake-supabase's upsert matches on shared keys, so a second run
     // overwrites the same 12 rows rather than appending 12 more.
     expect(db.rows('horizon_fx_rates')).toHaveLength(12);
+    expect(db.rows('core.fx_rates')).toHaveLength(12);
+  });
+
+  it('500s and reports when the core.fx_rates write fails', async () => {
+    mockFetch.mockResolvedValue(providerResponse(FULL_RATES));
+    const { client, db } = fakeSupabase();
+    db.failNext('core.fx_rates', 'permission denied for schema core');
+    mockedCreateServiceRoleClient.mockReturnValue(client);
+
+    const res = await GET(request('test-secret') as never);
+    expect(res.status).toBe(500);
   });
 });
