@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceRoleClient } from '@/lib/supabase/service-role';
+import type { SupabaseServerClient } from '@/lib/supabase/types';
 import { reportError } from '@/lib/observability';
 import { CURRENCIES } from '@/lib/types';
 
@@ -12,6 +13,20 @@ type FxRateInsert = {
   rate_e8: number;
   as_of_date: string;
   source: string;
+};
+
+/**
+ * Row of `core.fx_rates` (kapa-core's migrations, same Supabase project).
+ * The kapa-vue app reads its rates from that table, so every refresh must
+ * land there too — same snapshot, same day, both tables. The table isn't in
+ * this app's generated Database type (that only covers `public`), hence the
+ * cast at the call site.
+ */
+type CoreFxRateInsert = {
+  base_currency: string;
+  quote_currency: string;
+  rate_e8: number;
+  rate_date: string;
 };
 
 /**
@@ -87,6 +102,28 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     reportError('fx-refresh.write', error);
+    return NextResponse.json({ ok: false }, { status: 500 });
+  }
+
+  const coreRows: CoreFxRateInsert[] = rows.map((r) => ({
+    base_currency: r.base_code,
+    quote_currency: r.quote_code,
+    rate_e8: r.rate_e8,
+    rate_date: r.as_of_date,
+  }));
+  // `core` isn't in this app's generated Database type — see CoreFxRateInsert.
+  type CoreSchemaClient = {
+    from: (table: 'fx_rates') => ReturnType<SupabaseServerClient['from']>;
+  };
+  const coreFx = (
+    supabase as unknown as { schema: (name: 'core') => CoreSchemaClient }
+  ).schema('core').from('fx_rates');
+  const { error: coreError } = await coreFx.upsert(coreRows, {
+    onConflict: 'base_currency,quote_currency,rate_date',
+  });
+
+  if (coreError) {
+    reportError('fx-refresh.write-core', coreError);
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 
